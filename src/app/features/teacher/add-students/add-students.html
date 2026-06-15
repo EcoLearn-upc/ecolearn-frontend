@@ -1,0 +1,44 @@
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-logo">
+    <img src="logo.png" alt="EcoLearn" height="36">
+  </div>
+  <a class="nav-back" routerLink="/teacher/create-class">← Volver</a>
+  <button class="btn-orange">Mi perfil</button>
+</nav>
+
+<!-- BARRA PROGRESO -->
+<div class="progress-bar">
+  <div class="progress-fill" style="width: 66%"></div>
+</div>
+
+<!-- CONTENIDO -->
+<div class="container">
+  <h1>Agregar alumnos</h1>
+  <p class="subtitle">Sube tu Excel o ingrésalos manualmente</p>
+
+  <!-- EXCEL -->
+  <div class="excel-box">
+    <h3>Sube tu Excel de alumnos</h3>
+    <p>Columna requerida: "Nombre completo"</p>
+    <button class="btn-orange">Seleccionar archivo .xlsx</button>
+    <a href="#" class="link-green">Descargar plantilla de ejemplo</a>
+  </div>
+
+  <div class="separator">o agrégalos manualmente</div>
+
+  <!-- LISTA MANUAL -->
+  <div class="form-box">
+    <div class="alumno-row" *ngFor="let alumno of alumnos; let i = index; trackBy: trackByIndex">
+      <span class="alumno-num">{{ i + 1 }}</span>
+      <input
+        type="text"
+        placeholder="Nombre completo del alumno"
+        [(ngModel)]="alumnos[i]">
+      <button class="btn-remove" (click)="eliminarAlumno(i)" *ngIf="alumnos.length > 1">✕</button>
+    </div>
+
+    <button class="btn-add" (click)="agregarAlumno()">+ Agregar otro alumno</button>
+    <button class="btn-yellow" (click)="onSiguiente()">Ver vista previa →</button>
+  </div>
+</div>

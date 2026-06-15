@@ -1,0 +1,48 @@
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-logo">
+    <img src="logo.png" alt="EcoLearn" height="36">
+  </div>
+  <a class="nav-back" routerLink="/teacher/home">← Volver</a>
+  <button class="btn-orange">Mi perfil</button>
+</nav>
+
+<!-- BARRA PROGRESO -->
+<div class="progress-bar">
+  <div class="progress-fill" style="width: 33%"></div>
+</div>
+
+<!-- CONTENIDO -->
+<div class="container">
+  <h1>Nueva clase</h1>
+  <p class="subtitle">Completa los datos de tu nueva sección</p>
+
+  <div class="form-box">
+    <label>Nombre de la clase</label>
+    <input type="text" placeholder="Ej: 3°A – Primaria" [(ngModel)]="data.nombre">
+
+    <label>Grado / Nivel</label>
+    <input type="text" placeholder="Ej: Tercero de primaria" [(ngModel)]="data.grado">
+
+    <label>Sección</label>
+    <input type="text" placeholder="Ej: A" [(ngModel)]="data.seccion">
+
+    <label>Colegio</label>
+    <div class="colegio-readonly">{{ data.colegio }}</div>
+
+    <label>N° de estudiantes</label>
+    <input type="number" placeholder="Ej: 38" [(ngModel)]="data.numEstudiantes">
+
+    <!-- preview código -->
+    <div class="codigo-preview" *ngIf="data.colegio && data.grado && data.seccion">
+      <span>Código de clase:</span>
+      <strong>{{ generarCodigo() }}</strong>
+    </div>
+
+    <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+    <button class="btn-yellow" (click)="onSiguiente()" [disabled]="loading">
+      Siguiente — Agregar alumnos →
+    </button>
+  </div>
+</div>

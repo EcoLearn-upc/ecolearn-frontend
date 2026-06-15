@@ -1,0 +1,189 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 40px;
+  background: var(--green-soft);
+}
+
+.nav-back {
+  text-decoration: none;
+  color: var(--green-dark);
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.btn-orange {
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 22px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.progress-bar {
+  background: var(--green);
+  height: 6px;
+}
+
+.progress-fill {
+  background: var(--yellow);
+  height: 6px;
+  border-radius: 0 4px 4px 0;
+}
+
+.container {
+  min-height: calc(100vh - 66px);
+  background: #FDF6EC;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 50px 20px;
+  text-align: center;
+}
+
+.container h1 {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 38px;
+  color: var(--red);
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-family: 'Manjari', sans-serif;
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 24px;
+}
+
+/* EXCEL BOX */
+.excel-box {
+  background: var(--green-soft);
+  border: 2px solid var(--green);
+  border-radius: 16px;
+  padding: 24px 32px;
+  width: 100%;
+  max-width: 540px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.excel-box h3 {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--green-dark);
+}
+
+.excel-box p {
+  font-family: 'Manjari', sans-serif;
+  font-size: 14px;
+  color: var(--green-dark);
+}
+
+.link-green {
+  font-family: 'Manjari', sans-serif;
+  font-size: 14px;
+  color: var(--green-dark);
+  text-decoration: underline;
+}
+
+.separator {
+  font-family: 'Manjari', sans-serif;
+  font-size: 14px;
+  color: #888;
+  margin: 8px 0 20px;
+}
+
+/* FORM */
+.form-box {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 540px;
+  gap: 10px;
+}
+
+.alumno-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.alumno-num {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-gray);
+  width: 20px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.alumno-row input {
+  flex: 1;
+  padding: 14px 18px;
+  border: 2px solid var(--green);
+  border-radius: 14px;
+  font-family: 'Manjari', sans-serif;
+  font-size: 14px;
+  color: #555;
+  outline: none;
+  background: #fff;
+}
+
+.alumno-row input:focus {
+  border-color: var(--green-dark);
+}
+
+.btn-remove {
+  background: #FFEBEE;
+  color: var(--red);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.btn-add {
+  background: #fff;
+  color: var(--green-dark);
+  border: 2px solid var(--green);
+  border-radius: 14px;
+  padding: 12px 0;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-add:hover { background: var(--green-soft); }
+
+.btn-yellow {
+  background: #F5C542;
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  padding: 14px 0;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: opacity 0.2s;
+}
+
+.btn-yellow:hover { opacity: 0.9; }

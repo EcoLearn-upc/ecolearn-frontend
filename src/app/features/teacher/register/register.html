@@ -1,0 +1,56 @@
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-logo">
+    <img src="logo.png" alt="EcoLearn" height="36">
+  </div>
+  <a class="nav-back" routerLink="/teacher/login">← Volver</a>
+  <button class="btn-orange">Mi perfil</button>
+</nav>
+
+<!-- CONTENIDO -->
+<div class="container">
+  <h1>Crear cuenta docente</h1>
+  <p class="subtitle">Ingresa tus datos para registrarte</p>
+
+  <div class="form-box">
+    <label>Nombre y Apellido</label>
+    <input
+      type="text"
+      placeholder="Ej: María Gonzales"
+      [(ngModel)]="data.nombre">
+
+    <label>Correo Electrónico</label>
+    <input
+      type="email"
+      placeholder="tucorreo@colegio.edu.pe"
+      [(ngModel)]="data.email">
+
+    <label>Institución Educativa</label>
+    <input
+      type="text"
+      placeholder="Ej: I.E. Santísima María"
+      [(ngModel)]="data.colegio">
+
+    <label>Contraseña</label>
+    <input
+      type="password"
+      placeholder="Mínimo 8 caracteres"
+      [(ngModel)]="data.password">
+
+    <label>Confirmar contraseña</label>
+    <input
+      type="password"
+      placeholder="Ingresa nuevamente tu contraseña"
+      [(ngModel)]="confirmPassword">
+
+    <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+    <button class="btn-yellow" (click)="onRegister()" [disabled]="loading">
+      {{ loading ? 'Registrando...' : 'Registrarme' }}
+    </button>
+
+    <a class="link-login" routerLink="/teacher/login">
+      ¿Ya tienes cuenta? Inicia sesión
+    </a>
+  </div>
+</div>

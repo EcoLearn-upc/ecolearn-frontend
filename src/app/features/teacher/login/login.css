@@ -1,0 +1,139 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 40px;
+  background: var(--green-soft);
+}
+
+.nav-back {
+  text-decoration: none;
+  color: var(--green-dark);
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.btn-orange {
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 22px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.container {
+  min-height: calc(100vh - 60px);
+  background: #FDF6EC;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.emoji {
+  font-size: 80px;
+  margin-bottom: 16px;
+}
+
+.container h1 {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 38px;
+  color: var(--red);
+  margin-bottom: 8px;
+}
+
+.container h2 {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--orange);
+  margin-bottom: 32px;
+}
+
+.form-box {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 460px;
+  gap: 10px;
+  text-align: left;
+}
+
+.form-box label {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--green);
+}
+
+.form-box input {
+  padding: 14px 18px;
+  border: 2px solid var(--green);
+  border-radius: 14px;
+  font-family: 'Manjari', sans-serif;
+  font-size: 14px;
+  color: #888;
+  outline: none;
+  background: #fff;
+}
+
+.form-box input:focus {
+  border-color: var(--green-dark);
+}
+
+.forgot {
+  text-align: right;
+  font-family: 'Manjari', sans-serif;
+  font-size: 13px;
+  color: var(--orange);
+  text-decoration: none;
+}
+
+.btn-yellow {
+  background: #F5C542;
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  padding: 14px 0;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: opacity 0.2s;
+}
+
+.btn-yellow:hover { opacity: 0.9; }
+.btn-orange:hover { opacity: 0.9; }
+
+.btn-orange {
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  padding: 14px 0;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.error-msg {
+  background: #FFEBEE;
+  border: 2px solid var(--red);
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-family: 'Manjari', sans-serif;
+  font-size: 13px;
+  color: var(--red);
+  text-align: center;
+}

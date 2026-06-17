@@ -1,0 +1,49 @@
+<nav class="navbar">
+  <div class="nav-logo"><img src="logo.png" alt="EcoLearn" height="36"></div>
+  <a class="nav-back" routerLink="/student/select-name">← Volver</a>
+  <button class="btn-orange">Mi perfil</button>
+</nav>
+
+<div class="progress-bar">
+  <div class="progress-fill" style="width: 90%"></div>
+</div>
+
+<div class="page-layout">
+  <!-- RECUERDA -->
+  <div class="recuerda-box">
+    <div class="recuerda-title">📌 ¡Recuerda!</div>
+    <p>Tu profesor te dio tu PIN personal. Si lo olvidaste, ¡pídele uno nuevo!</p>
+  </div>
+
+  <!-- CONTENIDO -->
+  <div class="container">
+    <div class="avatar-circle">{{ alumno?.avatar || '🌱' }}</div>
+    <h1>¡Un paso más!</h1>
+    <h2>¡Hola {{ getNombreCorto() }}!</h2>
+    <p class="instruccion">Ingresa tu PIN de 4 dígitos para confirmar</p>
+
+    <!-- DOTS -->
+    <div class="dots-row">
+      <div class="dot" *ngFor="let filled of getDots()" [class.filled]="filled"></div>
+    </div>
+
+    <!-- ERROR -->
+    <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+    <!-- TECLADO -->
+    <div class="keypad">
+      <button class="key" (click)="pinPress('1')">1</button>
+      <button class="key" (click)="pinPress('2')">2</button>
+      <button class="key" (click)="pinPress('3')">3</button>
+      <button class="key" (click)="pinPress('4')">4</button>
+      <button class="key" (click)="pinPress('5')">5</button>
+      <button class="key" (click)="pinPress('6')">6</button>
+      <button class="key" (click)="pinPress('7')">7</button>
+      <button class="key" (click)="pinPress('8')">8</button>
+      <button class="key" (click)="pinPress('9')">9</button>
+      <button class="key key-borrar" (click)="pinPress('borrar')">Borrar</button>
+      <button class="key" (click)="pinPress('0')">0</button>
+      <button class="key key-ok" (click)="pinPress('ok')">Ok</button>
+    </div>
+  </div>
+</div>

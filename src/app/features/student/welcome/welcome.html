@@ -1,0 +1,41 @@
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-logo"><img src="logo.png" alt="EcoLearn" height="36"></div>
+  <a class="nav-back" routerLink="/student/enter-pin">← Volver</a>
+  <button class="btn-orange">Mi perfil</button>
+</nav>
+
+<!-- CONTENIDO -->
+<div class="container">
+
+  <!-- AVATAR -->
+  <div class="avatar-circle">{{ alumno?.avatar || '🌱' }}</div>
+
+  <!-- CÓDIGO -->
+  <div class="codigo-pill">Código de clase: {{ clase?.codigo }}</div>
+
+  <!-- NOMBRE -->
+  <h1>¡{{ getNombreCorto() }}!</h1>
+  <h2>Bienvenido a tu clase</h2>
+  <p class="subtitulo">Iniciemos esta aventura y comencemos a ganar puntos</p>
+
+  <!-- MÉTRICAS -->
+  <div class="metrics-row">
+    <div class="metric-card card-blue">
+      <div class="metric-val">{{ xp }}</div>
+      <div class="metric-lbl">XP Ganados</div>
+    </div>
+    <div class="metric-card card-green">
+      <div class="metric-val">{{ misiones }}</div>
+      <div class="metric-lbl">Misiones activas</div>
+    </div>
+    <div class="metric-card card-yellow">
+      <div class="metric-val">{{ posicion }}</div>
+      <div class="metric-lbl">Tu posición</div>
+    </div>
+  </div>
+
+  <!-- BOTÓN -->
+  <button class="btn-green" (click)="comenzar()">Comienza tu aventura!</button>
+
+</div>

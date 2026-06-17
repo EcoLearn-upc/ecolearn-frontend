@@ -20,7 +20,7 @@ export class Home implements OnInit {
 
   ngOnInit() {
     this.user = this.authService.getUser();
-    const claseData = sessionStorage.getItem('nuevaClase');
+    const claseData = localStorage.getItem('nuevaClase');
     if (claseData) {
       const data = JSON.parse(claseData);
       this.clases = [{

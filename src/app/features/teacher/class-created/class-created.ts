@@ -17,7 +17,7 @@ export class ClassCreated implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit() {
-    const data = sessionStorage.getItem('nuevaClase');
+    const data = localStorage.getItem('nuevaClase');
     if (!data) { this.router.navigate(['/teacher/home']); return; }
     this.claseData = JSON.parse(data);
     this.conObservacion = this.claseData.alumnos?.filter((a: string) => {
@@ -32,7 +32,7 @@ export class ClassCreated implements OnInit {
   }
 
   verClase() {
-    const data = JSON.parse(sessionStorage.getItem('nuevaClase') || '{}');
+    const data = JSON.parse(localStorage.getItem('nuevaClase') || '{}');
     this.router.navigate(['/teacher/class-detail', data.codigo]);
   }
 

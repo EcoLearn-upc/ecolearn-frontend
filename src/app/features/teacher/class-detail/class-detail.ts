@@ -19,7 +19,7 @@ export class ClassDetail implements OnInit {
   constructor(private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit() {
-    const claseData = sessionStorage.getItem('nuevaClase');
+    const claseData = localStorage.getItem('nuevaClase');
     if (claseData) {
       const data = JSON.parse(claseData);
       this.clase = {
@@ -39,7 +39,7 @@ export class ClassDetail implements OnInit {
           pin: this.generarPin()
         }));
         data.alumnosConPin = this.alumnos;
-        sessionStorage.setItem('nuevaClase', JSON.stringify(data));
+        localStorage.setItem('nuevaClase', JSON.stringify(data));
       }
     } else {
       this.router.navigate(['/teacher/home']);
@@ -70,9 +70,9 @@ export class ClassDetail implements OnInit {
   regenPin(alumno: any) {
     alumno.pin = this.generarPin();
     // guardar en sessionStorage
-    const data = JSON.parse(sessionStorage.getItem('nuevaClase') || '{}');
+    const data = JSON.parse(localStorage.getItem('nuevaClase') || '{}');
     data.alumnosConPin = this.alumnos;
-    sessionStorage.setItem('nuevaClase', JSON.stringify(data));
+    localStorage.setItem('nuevaClase', JSON.stringify(data));
   }
 
   getTop3(): any[] {

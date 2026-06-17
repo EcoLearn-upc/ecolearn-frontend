@@ -17,7 +17,7 @@ export class ConfirmStudents implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit() {
-    const data = sessionStorage.getItem('nuevaClase');
+    const data = localStorage.getItem('nuevaClase');
     if (!data) { this.router.navigate(['/teacher/add-students']); return; }
     this.claseData = JSON.parse(data);
     this.alumnos = this.claseData.alumnos.map((nombre: string, i: number) => {

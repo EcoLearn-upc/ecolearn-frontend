@@ -45,7 +45,7 @@ export class AddStudents implements OnInit {
       return;
     }
     const data = { ...this.claseData, alumnos: filtrados };
-    sessionStorage.setItem('nuevaClase', JSON.stringify(data));
+    localStorage.setItem('nuevaClase', JSON.stringify(data));
     this.router.navigate(['/teacher/confirm-students']);
   }
 }

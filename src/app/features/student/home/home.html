@@ -1,0 +1,137 @@
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-logo"><img src="logo.png" alt="EcoLearn" height="36"></div>
+  <div class="nav-links">
+    <a (click)="setTab('inicio')" [class.active]="activeTab==='inicio'" style="cursor:pointer">Inicio</a>
+    <a (click)="setTab('miclase')" [class.active]="activeTab==='miclase'" style="cursor:pointer">Mi clase</a>
+  </div>
+  <button class="btn-orange">Mi perfil</button>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <div class="av-circle">{{ alumno?.avatar || '🌱' }}</div>
+    <div>
+      <h1>¡Hola, {{ getNombreAlumno() }}!</h1>
+      <p>Nivel 4 · Guardiana del planeta</p>
+    </div>
+  </div>
+  <div class="xp-pill">⭐ {{ alumno?.xp || 0 }} XP</div>
+</div>
+
+<!-- XP BAR -->
+<div class="xpbar-wrap">
+  <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+    <span class="xp-lbl">Energía para el siguiente nivel</span>
+    <span class="xp-val">300 / 500 XP</span>
+  </div>
+  <div class="xpbar"><div class="xpfill" style="width:60%"></div></div>
+</div>
+
+<!-- CONTENIDO -->
+<div class="content">
+
+  <!-- VISTA INICIO -->
+  <div class="two-cols" *ngIf="activeTab==='inicio'">
+    <!-- RANKING -->
+    <div class="ranking-box">
+      <div class="ranking-title">🏆 Ranking semanal!</div>
+      <div class="ranking-lista">
+        <div class="rank-row" *ngFor="let r of ranking; let i = index">
+          <span class="rank-num">{{ i + 1 }}</span>
+          <div class="rank-av">👤</div>
+          <span class="rank-nombre">{{ r.nombre }}</span>
+          <span class="rank-xp">{{ r.xp }} XP</span>
+        </div>
+        <div class="empty" *ngIf="ranking.length === 0">Sin datos aún</div>
+      </div>
+    </div>
+
+    <!-- MISIONES -->
+    <div class="misiones-box">
+      <h2 class="misiones-title">✅ Misiones activas</h2>
+      <div class="mision-card" *ngFor="let m of misiones" [class]="getMisionClass(m.color)">
+        <div class="mision-top">
+          <div class="mision-icon">🌿</div>
+          <div style="flex:1">
+            <div class="mision-nombre">{{ m.titulo }}</div>
+            <div class="mision-xp">+ {{ m.xp }} XP al completar</div>
+          </div>
+          <div class="mision-badge" [class]="getBadgeClass(m.color)">{{ m.badge }}</div>
+        </div>
+        <div class="prog-row">
+          <div class="prog-bar">
+            <div class="prog-fill" [style.width]="m.progreso + '%'"
+                 [style.background]="getProgBarColor(m.color)"></div>
+          </div>
+          <span class="prog-pct" [style.color]="getProgBarColor(m.color)">
+            {{ m.color === 'yellow' ? '0 / ' + m.total : m.color === 'red' ? '0%' : m.progreso + '%' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VISTA MI CLASE -->
+  <div *ngIf="activeTab==='miclase'">
+    <div class="clase-info">
+      <div class="clase-codigo">{{ clase?.codigo }}</div>
+      <h2>{{ clase?.nombre }}</h2>
+      <p>{{ clase?.colegio }}</p>
+      <div class="clase-tag">{{ clase?.numAlumnos || clase?.alumnos?.length }} alumnos</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="botnav">
+  <button class="bnav-btn" [class.on]="activeTab==='inicio'" (click)="setTab('inicio')">
+    <span class="bnav-icon">🏠</span><span class="bnav-lbl">Inicio</span>
+  </button>
+  <button class="bnav-btn" [class.on]="activeTab==='logros'" (click)="setTab('logros')">
+    <span class="bnav-icon">⭐</span><span class="bnav-lbl">Logros</span>
+  </button>
+  <button class="bnav-btn" routerLink="/student/classifier">
+    <span class="bnav-icon">🎥</span><span class="bnav-lbl">Clasificador de residuos</span>
+  </button>
+</div>
+
+<!-- ECOBOT FAB -->
+<button class="ecobot-fab" (click)="abrirEcobot()">
+  <img src="logo.png" alt="EcoBot" style="width:32px;height:32px;border-radius:50%">
+</button>
+
+<!-- ECOBOT OVERLAY -->
+<div class="ecobot-overlay" *ngIf="ecobotAbierto" (click)="cerrarEcobot()"></div>
+
+<!-- ECOBOT PANEL -->
+<div class="ecobot-panel" *ngIf="ecobotAbierto">
+  <div class="ecobot-header">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="ecobot-av">🌱</div>
+      <div>
+        <div class="ecobot-nombre">EcoBot</div>
+        <div class="ecobot-status">● En línea</div>
+      </div>
+    </div>
+    <button class="btn-cerrar" (click)="cerrarEcobot()">✕</button>
+  </div>
+  <div class="chat-area">
+    <div *ngFor="let m of chatMensajes"
+         [class]="m.tipo === 'bot' ? 'bubble-bot' : 'bubble-user'">
+      {{ m.texto }}
+    </div>
+  </div>
+  <div class="chat-chips">
+    <button class="chip" (click)="chatInput='¿Cómo reciclo plástico?';enviarMensaje()">♻️ Plástico</button>
+    <button class="chip" (click)="chatInput='¿Qué es el compostaje?';enviarMensaje()">🌱 Compostaje</button>
+    <button class="chip" (click)="chatInput='¿Qué hago con las pilas?';enviarMensaje()">🔋 Pilas</button>
+  </div>
+  <div class="chat-input-row">
+    <input [(ngModel)]="chatInput" placeholder="Escribe tu pregunta..."
+           (keydown.enter)="enviarMensaje()" class="chat-input">
+    <button class="btn-send" (click)="enviarMensaje()">➤</button>
+  </div>
+</div>

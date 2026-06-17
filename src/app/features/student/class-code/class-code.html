@@ -1,0 +1,22 @@
+<nav class="navbar">
+  <div class="nav-logo"><img src="logo.png" alt="EcoLearn" height="36"></div>
+  <a class="nav-back" routerLink="/auth">← Volver</a>
+  <button class="btn-orange">Mi perfil</button>
+</nav>
+
+<div class="container">
+  <div class="emoji">🤩</div>
+  <h1>¡Bienvenido!</h1>
+  <h2>Ingresa tu código de clase para comenzar esta aventura</h2>
+
+  <div class="input-row">
+    <input
+      type="text"
+      placeholder="Código de clase"
+      [(ngModel)]="codigo"
+      (keydown.enter)="onEnviar()">
+    <button class="btn-green" (click)="onEnviar()">Enviar</button>
+  </div>
+
+  <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div>
+</div>

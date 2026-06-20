@@ -36,6 +36,9 @@ export class RetoService {
   activos(): Observable<Reto[]> {
     return this.http.get<Reto[]>(`${this.apiUrl}/retos`);
   }
+  inscribirse(retoId: string): Observable<RetoUsuario> {
+    return this.http.post<RetoUsuario>(`${this.apiUrl}/retos/${retoId}/inscribirse`, {});
+  }
 
   misRetos(): Observable<RetoUsuario[]> {
     return this.http.get<RetoUsuario[]>(`${this.apiUrl}/retos/mis-retos`);

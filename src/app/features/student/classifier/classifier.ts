@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { ResiduoService } from '../../../core/services/residuo.service';
 
 @Component({
   selector: 'app-classifier',
@@ -16,8 +16,6 @@ export class Classifier implements OnInit {
   resultado: any = null;
   imagenPreview: string | null = null;
   errorMsg = '';
-
-  apiUrl = 'http://127.0.0.1:8000';
 
   recientes = [
     { emoji: '🧴', nombre: 'Botella plástico', fecha: 'Hoy 10:32am', tipo: 'Reciclable', xp: 10, color: 'green' },
@@ -39,7 +37,11 @@ export class Classifier implements OnInit {
     total: 7
   };
 
-  constructor(private http: HttpClient, private router: Router , private cdr: ChangeDetectorRef) {}
+  constructor(
+    private residuoService: ResiduoService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     const alumnoData = localStorage.getItem('alumnoSeleccionado');
@@ -75,23 +77,24 @@ export class Classifier implements OnInit {
 
     this.estado = 'loading';
     this.errorMsg = '';
-    const formData = new FormData();
-    formData.append('file', file);
 
-    this.http.post<any>(`${this.apiUrl}/predict`, formData).subscribe({
+    this.residuoService.clasificar(file).subscribe({
       next: (res) => {
-        console.log('Respuesta del modelo:', res);
         this.resultado = {
-          ...res,
-          claseTraducida: this.traducirClase(res.clase)
+          clase: res.categoriaDetectada,
+          confianza: res.confianza,
+          puntosGanados: res.puntosGanados,
+          esCorrecta: res.esCorrecta,
+          claseTraducida: this.traducirClase(res.categoriaDetectada)
         };
+        this.guardarReciente(res.categoriaDetectada, this.resultado.claseTraducida, res.puntosGanados);
         this.estado = 'result';
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error:', err);
         this.estado = 'error';
-        this.errorMsg = 'No se pudo clasificar la imagen. Intenta con otra foto.';
+        this.errorMsg = err.error?.error || 'No se pudo clasificar la imagen. Intenta con otra foto.';
       }
     });
   }
@@ -143,13 +146,13 @@ export class Classifier implements OnInit {
     return 'badge-gray';
   }
 
-  guardarReciente(clase: string, claseTraducida: string) {
+  guardarReciente(clase: string, claseTraducida: string, xp: number) {
     const nuevo = {
       emoji: this.getEmojiPorClase(clase),
       nombre: claseTraducida,
       fecha: 'Hoy ' + new Date().toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' }),
       tipo: this.getTipoTexto(clase),
-      xp: 10,
+      xp: xp,
       color: this.getColorPorClase(clase)
     };
     this.recientes.unshift(nuevo);
@@ -181,5 +184,4 @@ export class Classifier implements OnInit {
     if (clase?.toLowerCase() === 'trash') return 'red';
     return 'green';
   }
-
 }

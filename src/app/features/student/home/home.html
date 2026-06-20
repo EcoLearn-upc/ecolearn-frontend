@@ -1,6 +1,6 @@
 <!-- NAVBAR -->
 <nav class="navbar">
-  <div class="nav-logo"><img src="/logo.png" alt="EcoLearn" height="36"></div>
+  <div class="nav-logo"><img src="logo.png" alt="EcoLearn" height="36"></div>
   <div class="nav-links">
     <a (click)="setTab('inicio')" [class.active]="activeTab==='inicio'" style="cursor:pointer">Inicio</a>
     <a (click)="setTab('miclase')" [class.active]="activeTab==='miclase'" style="cursor:pointer">Mi clase</a>
@@ -26,7 +26,7 @@
     <span class="xp-lbl">Energía para el siguiente nivel</span>
     <span class="xp-val">{{ perfil?.puntos || 0 }} / {{ (perfil?.nivel || 1) * 100 }} XP</span>
   </div>
-  <div class="xpbar"><div class="xpfill" [style.width]="porcentajeNivel + '%'"></div></div>
+  <div class="xpbar"><div class="xpfill" [style.width]="getPorcentajeNivel() + '%'"></div></div>
 </div>
 
 <!-- CONTENIDO -->
@@ -66,9 +66,13 @@
                  [style.background]="getProgBarColor(m.color)"></div>
           </div>
           <span class="prog-pct" [style.color]="getProgBarColor(m.color)">
-  {{ m.actual }} / {{ m.total }}
-</span>
+            {{ m.actual }} / {{ m.total }}
+          </span>
         </div>
+        <button *ngIf="!m.inscrito" class="btn-orange" style="margin-top:8px"
+                (click)="unirseAMision(m.retoId)">
+          Unirme a esta misión
+        </button>
       </div>
     </div>
   </div>
@@ -99,8 +103,8 @@
 </div>
 
 <!-- ECOBOT FAB -->
-  <button class="ecobot-fab" (click)="abrirEcobot()">
-  <img src="/logo.png" alt="EcoBot" style="width:32px;height:32px;border-radius:50%">
+<button class="ecobot-fab" (click)="abrirEcobot()">
+  <img src="logo.png" alt="EcoBot" style="width:32px;height:32px;border-radius:50%">
 </button>
 
 <!-- ECOBOT OVERLAY -->

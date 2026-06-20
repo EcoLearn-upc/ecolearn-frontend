@@ -116,8 +116,8 @@
         <div class="confianza-fill" [style.width]="getConfianzaPct() + '%'"></div>
       </div>
       <div class="resultado-btns">
-        <button class="btn-green" (click)="guardarReciente(resultado?.clase, resultado?.claseTraducida); resetear()">
-          ✅ Guardar +10 XP
+        <button class="btn-green" (click)="resetear()">
+          ✅ +{{ resultado?.puntosGanados }} XP ganados
         </button>
         <button class="btn-outline" (click)="resetear()">Clasificar otro</button>
       </div>

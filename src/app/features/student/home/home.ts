@@ -1,10 +1,11 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsuarioService, PerfilUsuario, UsuarioRanking } from '../../../core/services/usuario.service';
-import { RetoService, Reto, RetoUsuario } from '../../../core/services/reto.service';
+import { RetoService } from '../../../core/services/reto.service';
 import { ChatbotService } from '../../../core/services/chatbot.service';
+import { LogroService } from '../../../core/services/logro.service';
 
 @Component({
   selector: 'app-home',
@@ -27,12 +28,15 @@ export class HomeStudent implements OnInit {
   perfil: PerfilUsuario | null = null;
   misiones: any[] = [];
   ranking: UsuarioRanking[] = [];
+  logros: any[] = [];
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private usuarioService: UsuarioService,
     private retoService: RetoService,
     private chatbotService: ChatbotService,
+    private logroService: LogroService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -43,9 +47,17 @@ export class HomeStudent implements OnInit {
     this.alumno = JSON.parse(alumnoData);
     if (claseData) this.clase = JSON.parse(claseData);
 
+    this.route.queryParamMap.subscribe(params => {
+      const tab = params.get('tab');
+      if (tab === 'inicio' || tab === 'miclase' || tab === 'logros') {
+        this.activeTab = tab;
+      }
+    });
+
     this.cargarPerfil();
     this.cargarMisiones();
     this.cargarRanking();
+    this.cargarLogros();
   }
 
   cargarPerfil() {
@@ -97,6 +109,28 @@ export class HomeStudent implements OnInit {
     this.usuarioService.ranking().subscribe({
       next: (r) => { this.ranking = r; this.cdr.detectChanges(); },
       error: () => this.ranking = []
+    });
+  }
+
+  cargarLogros() {
+    this.logroService.todos().subscribe({
+      next: (todos) => {
+        this.logroService.misLogros().subscribe({
+          next: (misLogros) => {
+            this.logros = todos.map(l => {
+              const obtenido = misLogros.find(m => m.logroId === l.id);
+              return {
+                ...l,
+                obtenido: !!obtenido,
+                fechaObtenido: obtenido?.fechaObtenido || null
+              };
+            });
+            this.cdr.detectChanges();
+          },
+          error: () => this.logros = []
+        });
+      },
+      error: () => this.logros = []
     });
   }
 

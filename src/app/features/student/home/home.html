@@ -87,6 +87,26 @@
     </div>
   </div>
 
+  <!-- VISTA LOGROS -->
+  <div *ngIf="activeTab==='logros'">
+    <h2 class="misiones-title" style="margin-bottom:16px">⭐ Mis logros</h2>
+    <div class="mision-card" *ngFor="let l of logros"
+         [class]="l.obtenido ? 'mision-green' : 'mision-yellow'"
+         [style.opacity]="l.obtenido ? 1 : 0.5">
+      <div class="mision-top">
+        <div class="mision-icon">{{ l.icono }}</div>
+        <div style="flex:1">
+          <div class="mision-nombre">{{ l.nombre }}</div>
+          <div class="mision-xp">{{ l.descripcion }}</div>
+        </div>
+        <div class="mision-badge" [class]="l.obtenido ? 'badge-green' : 'badge-yellow'">
+          {{ l.obtenido ? '✓ Obtenido' : 'Bloqueado' }}
+        </div>
+      </div>
+    </div>
+    <div class="empty" *ngIf="logros.length === 0">Aún no hay logros disponibles</div>
+  </div>
+
 </div>
 
 <!-- BOTTOM NAV -->

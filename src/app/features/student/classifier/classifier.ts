@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ResiduoService } from '../../../core/services/residuo.service';
+import { UsuarioService, PerfilUsuario } from '../../../core/services/usuario.service';
 
 @Component({
   selector: 'app-classifier',
@@ -12,6 +13,7 @@ import { ResiduoService } from '../../../core/services/residuo.service';
 export class Classifier implements OnInit {
 
   alumno: any = null;
+  perfil: PerfilUsuario | null = null;
   estado: 'idle' | 'loading' | 'result' | 'error' = 'idle';
   resultado: any = null;
   imagenPreview: string | null = null;
@@ -39,6 +41,7 @@ export class Classifier implements OnInit {
 
   constructor(
     private residuoService: ResiduoService,
+    private usuarioService: UsuarioService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
@@ -48,6 +51,20 @@ export class Classifier implements OnInit {
     if (alumnoData) this.alumno = JSON.parse(alumnoData);
     const recientesData = localStorage.getItem('recientes');
     if (recientesData) this.recientes = JSON.parse(recientesData);
+    this.cargarPerfil();
+  }
+
+  cargarPerfil() {
+    this.usuarioService.perfil().subscribe({
+      next: (p) => { this.perfil = p; this.cdr.detectChanges(); },
+      error: () => this.perfil = null
+    });
+  }
+
+  getPorcentajeNivel(): number {
+    if (!this.perfil) return 0;
+    const metaNivel = this.perfil.nivel * 100;
+    return Math.min(100, Math.round((this.perfil.puntos / metaNivel) * 100));
   }
 
   onFileSelected(event: any) {
@@ -88,6 +105,7 @@ export class Classifier implements OnInit {
           claseTraducida: this.traducirClase(res.categoriaDetectada)
         };
         this.guardarReciente(res.categoriaDetectada, this.resultado.claseTraducida, res.puntosGanados);
+        this.cargarPerfil();
         this.estado = 'result';
         this.cdr.detectChanges();
       },

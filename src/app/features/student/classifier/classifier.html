@@ -14,17 +14,17 @@
     <div class="av-circle">{{ alumno?.avatar || '🌱' }}</div>
     <div>
       <h1>¡Hola, {{ alumno?.nombre?.split(',')[1]?.trim()?.split(' ')[0] || 'Alumno' }}!</h1>
-      <p>Nivel 4 · Guardiana del planeta</p>
+      <p>Nivel {{ perfil?.nivel || 1 }} · Guardiana del planeta</p>
     </div>
   </div>
-  <div class="xp-pill">⭐ {{ alumno?.xp || 0 }} XP</div>
+  <div class="xp-pill">⭐ {{ perfil?.puntos || 0 }} XP</div>
 </div>
 <div class="xpbar-wrap">
   <div style="display:flex;justify-content:space-between;margin-bottom:3px">
     <span class="xp-lbl">Energía para el siguiente nivel</span>
-    <span class="xp-val">300 / 500 XP</span>
+    <span class="xp-val">{{ perfil?.puntos || 0 }} / {{ (perfil?.nivel || 1) * 100 }} XP</span>
   </div>
-  <div class="xpbar"><div class="xpfill" style="width:60%"></div></div>
+  <div class="xpbar"><div class="xpfill" [style.width]="getPorcentajeNivel() + '%'"></div></div>
 </div>
 
 <!-- INPUT OCULTO -->
@@ -139,7 +139,7 @@
   <button class="bnav-btn" routerLink="/student/home">
     <span class="bnav-icon">🏠</span><span class="bnav-lbl">Inicio</span>
   </button>
-  <button class="bnav-btn">
+  <button class="bnav-btn" routerLink="/student/home" [queryParams]="{ tab: 'logros' }">
     <span class="bnav-icon">⭐</span><span class="bnav-lbl">Logros</span>
   </button>
   <button class="bnav-btn on">

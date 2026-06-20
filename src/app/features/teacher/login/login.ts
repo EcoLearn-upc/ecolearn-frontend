@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { LoginRequest } from '../../../core/models/auth.models';
 
 @Component({
   selector: 'app-login',
-  imports: [RouterModule, FormsModule],
+  imports: [RouterModule, CommonModule, FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -34,7 +35,7 @@ export class Login {
           this.router.navigate(['/student/home']);
         }
       },
-      error: (err) => {
+      error: () => {
         this.loading = false;
         this.errorMsg = 'Correo o contraseña incorrectos';
       }

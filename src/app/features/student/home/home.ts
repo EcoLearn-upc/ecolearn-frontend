@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { UsuarioService, PerfilUsuario, UsuarioRanking } from '../../../core/services/usuario.service';
+import { RetoService } from '../../../core/services/reto.service';
+import { ChatbotService } from '../../../core/services/chatbot.service';
 
 @Component({
   selector: 'app-home',
@@ -19,43 +22,80 @@ export class HomeStudent implements OnInit {
     { tipo: 'bot', texto: '¡Hola! Soy EcoBot 🌿 Tu asistente ambiental. Pregúntame sobre reciclaje y cuidado del planeta.' }
   ];
   chatInput = '';
+  enviandoChat = false;
 
-  misiones = [
-    { titulo: 'Clasifica 3 residuos esta semana', xp: 50, progreso: 66, actual: 2, total: 3, color: 'green', badge: '2/3' },
-    { titulo: 'Completa el quiz ambiental', xp: 30, progreso: 0, actual: 0, total: 5, color: 'yellow', badge: 'Nuevo' },
-    { titulo: 'Chatea con EcoBot por 1ra vez', xp: 20, progreso: 0, actual: 0, total: 1, color: 'red', badge: '0/1' }
-  ];
+  perfil: PerfilUsuario | null = null;
+  misiones: any[] = [];
+  ranking: UsuarioRanking[] = [];
+  porcentajeNivel = 0;
 
-  ranking: any[] = [];
-
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private usuarioService: UsuarioService,
+    private retoService: RetoService,
+    private chatbotService: ChatbotService
+  ) {}
 
   ngOnInit() {
     const alumnoData = localStorage.getItem('alumnoSeleccionado');
     const claseData = localStorage.getItem('claseAlumno');
     if (!alumnoData) { this.router.navigate(['/student/class-code']); return; }
     this.alumno = JSON.parse(alumnoData);
-    if (claseData) {
-      this.clase = JSON.parse(claseData);
-      this.ranking = (this.clase.alumnosConPin || []).map((a: any, i: number) => ({
-        nombre: this.getNombreCorto(a.nombre),
-        xp: Math.floor(Math.random() * 400) + 100
-      })).sort((a: any, b: any) => b.xp - a.xp);
-    }
+    if (claseData) this.clase = JSON.parse(claseData);
+
+    this.cargarPerfil();
+    this.cargarMisiones();
+    this.cargarRanking();
   }
 
-  getNombreCorto(nombre: string): string {
-    const partes = nombre.split(',');
-    if (partes.length >= 2) {
-      const apellido = partes[0].trim().split(' ')[0];
-      const primerNombre = partes[1].trim().split(' ')[0];
-      return `${primerNombre} ${apellido[0]}.`;
-    }
-    return nombre.split(' ')[0];
+  cargarPerfil() {
+    this.usuarioService.perfil().subscribe({
+      next: (p) => {
+        this.perfil = p;
+        const metaNivel = p.nivel * 100;
+        this.porcentajeNivel = metaNivel > 0 ? Math.min(100, Math.round((p.puntos / metaNivel) * 100)) : 0;
+      },
+      error: () => this.perfil = null
+    });
+  }
+
+  cargarMisiones() {
+    this.retoService.activos().subscribe({
+      next: (retos) => {
+        this.retoService.misRetos().subscribe({
+          next: (misRetos) => {
+            this.misiones = retos.map(r => {
+              const ru = misRetos.find(m => m.retoId === r.id);
+              const progreso = ru ? ru.progreso : 0;
+              const pct = r.meta > 0 ? Math.round((progreso / r.meta) * 100) : 0;
+              return {
+                titulo: r.titulo,
+                xp: r.puntosRecompensa,
+                progreso: pct,
+                actual: progreso,
+                total: r.meta,
+                completado: ru?.completado || false,
+                color: ru?.completado ? 'green' : progreso > 0 ? 'yellow' : 'red',
+                badge: `${progreso}/${r.meta}`
+              };
+            });
+          },
+          error: () => this.misiones = []
+        });
+      },
+      error: () => this.misiones = []
+    });
+  }
+
+  cargarRanking() {
+    this.usuarioService.ranking().subscribe({
+      next: (r) => this.ranking = r,
+      error: () => this.ranking = []
+    });
   }
 
   getNombreAlumno(): string {
-    return this.getNombreCorto(this.alumno?.nombre || '');
+    return this.perfil?.nombre || this.alumno?.nombre || '';
   }
 
   setTab(tab: string) { this.activeTab = tab; }
@@ -64,16 +104,23 @@ export class HomeStudent implements OnInit {
   cerrarEcobot() { this.ecobotAbierto = false; }
 
   enviarMensaje() {
-    if (!this.chatInput.trim()) return;
-    this.chatMensajes.push({ tipo: 'user', texto: this.chatInput });
+    if (!this.chatInput.trim() || this.enviandoChat) return;
     const pregunta = this.chatInput;
+    this.chatMensajes.push({ tipo: 'user', texto: pregunta });
     this.chatInput = '';
-    setTimeout(() => {
-      this.chatMensajes.push({
-        tipo: 'bot',
-        texto: '¡Buena pregunta! 🌱 Recuerda siempre separar los residuos en sus tachos correspondientes: amarillo para plástico, azul para papel y verde para orgánicos.'
-      });
-    }, 800);
+    this.enviandoChat = true;
+
+    this.chatbotService.enviarMensaje(pregunta).subscribe({
+      next: (historial) => {
+        const ultimo = historial.mensajes[historial.mensajes.length - 1];
+        this.chatMensajes.push({ tipo: 'bot', texto: ultimo.contenido });
+        this.enviandoChat = false;
+      },
+      error: () => {
+        this.chatMensajes.push({ tipo: 'bot', texto: 'EcoBot no está disponible ahora, intenta más tarde 🌱' });
+        this.enviandoChat = false;
+      }
+    });
   }
 
   getMisionClass(color: string): string {

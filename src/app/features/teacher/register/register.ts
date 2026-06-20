@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { RegisterRequest } from '../../../core/models/auth.models';
 
 @Component({
   selector: 'app-register',
-  imports: [RouterModule, FormsModule],
+  imports: [RouterModule, CommonModule, FormsModule],
   templateUrl: './register.html',
   styleUrl: './register.css'
 })
@@ -38,7 +39,7 @@ export class Register {
         this.loading = false;
         this.router.navigate(['/teacher/home']);
       },
-      error: (err) => {
+      error: () => {
         this.loading = false;
         this.errorMsg = 'Error al registrarse. Intenta nuevamente.';
       }

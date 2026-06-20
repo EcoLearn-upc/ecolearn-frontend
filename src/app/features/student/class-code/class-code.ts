@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ClaseService } from '../../../core/services/clase.service';
 
 @Component({
   selector: 'app-class-code',
@@ -13,26 +14,29 @@ export class ClassCode {
 
   codigo = '';
   errorMsg = '';
+  loading = false;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private claseService: ClaseService) {}
 
   onEnviar() {
     if (!this.codigo.trim()) {
       this.errorMsg = 'Por favor ingresa el código de clase';
       return;
     }
-    // buscar clase en sessionStorage por ahora
-    const claseData = localStorage.getItem('nuevaClase');
-    if (claseData) {
-      const data = JSON.parse(claseData);
-      if (data.codigo.toUpperCase() === this.codigo.toUpperCase().trim()) {
-        localStorage.setItem('claseAlumno', JSON.stringify(data));
+
+    this.loading = true;
+    this.errorMsg = '';
+
+    this.claseService.obtenerPorCodigo(this.codigo.trim().toUpperCase()).subscribe({
+      next: (info) => {
+        localStorage.setItem('claseAlumno', JSON.stringify(info));
+        this.loading = false;
         this.router.navigate(['/student/select-name']);
-      } else {
-        this.errorMsg = 'Código de clase incorrecto. Verifica con tu profesor.';
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMsg = err.error?.error || 'Código de clase incorrecto. Verifica con tu profesor.';
       }
-    } else {
-      this.errorMsg = 'No se encontró ninguna clase. Verifica el código.';
-    }
+    });
   }
 }

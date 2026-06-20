@@ -11,7 +11,8 @@ import { CommonModule } from '@angular/common';
 })
 export class SelectName implements OnInit {
 
-  alumnos: any[] = [];
+  alumnos: string[] = [];
+  codigoAcceso = '';
   selectedAlumno = '';
   selectedAvatar = '';
   errorMsg = '';
@@ -24,9 +25,8 @@ export class SelectName implements OnInit {
     const data = localStorage.getItem('claseAlumno');
     if (!data) { this.router.navigate(['/student/class-code']); return; }
     const clase = JSON.parse(data);
-    this.alumnos = clase.alumnosConPin || clase.alumnos?.map((nombre: string, i: number) => ({
-      nombre, pin: '0000'
-    })) || [];
+    this.alumnos = clase.alumnos || [];
+    this.codigoAcceso = clase.codigoAcceso;
   }
 
   seleccionarAvatar(av: string) {
@@ -45,7 +45,7 @@ export class SelectName implements OnInit {
     localStorage.setItem('alumnoSeleccionado', JSON.stringify({
       nombre: this.selectedAlumno,
       avatar: this.selectedAvatar,
-      pin: this.alumnos.find(a => a.nombre === this.selectedAlumno)?.pin
+      codigoAcceso: this.codigoAcceso
     }));
     this.router.navigate(['/student/enter-pin']);
   }

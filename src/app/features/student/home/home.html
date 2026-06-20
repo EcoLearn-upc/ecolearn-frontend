@@ -1,6 +1,6 @@
 <!-- NAVBAR -->
 <nav class="navbar">
-  <div class="nav-logo"><img src="logo.png" alt="EcoLearn" height="36"></div>
+  <div class="nav-logo"><img src="/logo.png" alt="EcoLearn" height="36"></div>
   <div class="nav-links">
     <a (click)="setTab('inicio')" [class.active]="activeTab==='inicio'" style="cursor:pointer">Inicio</a>
     <a (click)="setTab('miclase')" [class.active]="activeTab==='miclase'" style="cursor:pointer">Mi clase</a>
@@ -14,19 +14,19 @@
     <div class="av-circle">{{ alumno?.avatar || '🌱' }}</div>
     <div>
       <h1>¡Hola, {{ getNombreAlumno() }}!</h1>
-      <p>Nivel 4 · Guardiana del planeta</p>
+      <p>Nivel {{ perfil?.nivel || 1 }} · Guardiana del planeta</p>
     </div>
   </div>
-  <div class="xp-pill">⭐ {{ alumno?.xp || 0 }} XP</div>
+  <div class="xp-pill">⭐ {{ perfil?.puntos || 0 }} XP</div>
 </div>
 
 <!-- XP BAR -->
 <div class="xpbar-wrap">
   <div style="display:flex;justify-content:space-between;margin-bottom:4px">
     <span class="xp-lbl">Energía para el siguiente nivel</span>
-    <span class="xp-val">300 / 500 XP</span>
+    <span class="xp-val">{{ perfil?.puntos || 0 }} / {{ (perfil?.nivel || 1) * 100 }} XP</span>
   </div>
-  <div class="xpbar"><div class="xpfill" style="width:60%"></div></div>
+  <div class="xpbar"><div class="xpfill" [style.width]="porcentajeNivel + '%'"></div></div>
 </div>
 
 <!-- CONTENIDO -->
@@ -42,7 +42,7 @@
           <span class="rank-num">{{ i + 1 }}</span>
           <div class="rank-av">👤</div>
           <span class="rank-nombre">{{ r.nombre }}</span>
-          <span class="rank-xp">{{ r.xp }} XP</span>
+          <span class="rank-xp">{{ r.puntos }} XP</span>
         </div>
         <div class="empty" *ngIf="ranking.length === 0">Sin datos aún</div>
       </div>
@@ -66,8 +66,8 @@
                  [style.background]="getProgBarColor(m.color)"></div>
           </div>
           <span class="prog-pct" [style.color]="getProgBarColor(m.color)">
-            {{ m.color === 'yellow' ? '0 / ' + m.total : m.color === 'red' ? '0%' : m.progreso + '%' }}
-          </span>
+  {{ m.actual }} / {{ m.total }}
+</span>
         </div>
       </div>
     </div>
@@ -99,8 +99,8 @@
 </div>
 
 <!-- ECOBOT FAB -->
-<button class="ecobot-fab" (click)="abrirEcobot()">
-  <img src="logo.png" alt="EcoBot" style="width:32px;height:32px;border-radius:50%">
+  <button class="ecobot-fab" (click)="abrirEcobot()">
+  <img src="/logo.png" alt="EcoBot" style="width:32px;height:32px;border-radius:50%">
 </button>
 
 <!-- ECOBOT OVERLAY -->

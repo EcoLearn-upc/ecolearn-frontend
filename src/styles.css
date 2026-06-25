@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Manjari&display=swap');
+
+/* You can add global styles to this file, and also import other style files */
+/* ── VARIABLES ECOLEARN ── */
+:root {
+  --green:       #4CAF50;
+  --green-dark:  #27500A;
+  --green-soft:  #EAF3DE;
+  --yellow:      #FAC775;
+  --yellow-soft: #FAEEDA;
+  --orange:      #F0A000;
+  --red:         #E53935;
+  --cream:       #F0F7E6;
+  --gray-soft:   #E0E0E0;
+  --text-dark:   #27500A;
+  --text-gray:   #726F6F;
+}
+
+/* ── RESET ── */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── TIPOGRAFÍA ── */
+
+body {
+  font-family: 'Manjari', sans-serif;
+  background-color: var(--cream);
+  color: var(--text-dark);
+}
+
+h1, h2, h3, h4, button, .navbar, nav {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+}

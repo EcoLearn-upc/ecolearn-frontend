@@ -1,0 +1,32 @@
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-logo">
+    <img src="logo.png" alt="EcoLearn" height="36">
+  </div>
+  <ul class="nav-links">
+    <li><a routerLink="/">Inicio</a></li>
+  </ul>
+  <button class="btn-orange">Mi perfil</button>
+</nav>
+
+<!-- CONTENIDO -->
+<div class="container">
+  <h1>¡Hola! ¿Quién eres?</h1>
+  <h2>¡Elige tu aventura de aprendizaje!</h2>
+
+  <div class="cards-row">
+    <!-- ESTUDIANTE -->
+    <div class="role-card card-blue" routerLink="/student/home">
+      <img src="mochila.png" alt="Estudiante">
+      <h3>Estudiante</h3>
+      <p>Aprende jugando</p>
+    </div>
+
+    <!-- DOCENTE -->
+    <div class="role-card card-yellow" routerLink="/teacher/login">
+      <img src="libros.png" alt="Docente">
+      <h3>Docente</h3>
+      <p>Gestiona clases</p>
+    </div>
+  </div>
+</div>

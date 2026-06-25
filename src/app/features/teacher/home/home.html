@@ -1,0 +1,118 @@
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-logo">
+    <img src="logo.png" alt="EcoLearn" height="36">
+  </div>
+  <div class="nav-links">
+    <a (click)="vistaActual='inicio'" [class.active]="vistaActual==='inicio'" style="cursor:pointer">Inicio</a>
+    <a (click)="vistaActual='clases'" [class.active]="vistaActual==='clases'" style="cursor:pointer">Mis clases</a>
+  </div>
+  <button class="btn-orange" (click)="logout()">Mi perfil</button>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div>
+    <h1>¡Hola, Prof. {{ user?.nombre }}!</h1>
+    <p>¿Cómo se encuentra el día de hoy?</p>
+  </div>
+</div>
+
+<!-- VISTA INICIO -->
+<div class="content" *ngIf="vistaActual === 'inicio'">
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-val">{{ clases.length }}</div>
+      <div class="metric-lbl">Clases activas</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">{{ totalAlumnos }}</div>
+      <div class="metric-lbl">Estudiantes en total</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">0%</div>
+      <div class="metric-lbl">De Participación</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">0</div>
+      <div class="metric-lbl">Estudiantes inactivos</div>
+    </div>
+  </div>
+
+  <div class="clases-header">
+    <h2>Mis clases</h2>
+    <button class="btn-orange" routerLink="/teacher/create-class">+ Nueva clase</button>
+  </div>
+
+  <div class="empty-state" *ngIf="clases.length === 0">
+    <div class="empty-icon">📚</div>
+    <h3>Aún no tienes clases</h3>
+    <p>Crea tu primera clase para empezar a gestionar a tus alumnos</p>
+    <button class="btn-orange" routerLink="/teacher/create-class">+ Crear mi primera clase</button>
+  </div>
+
+  <div class="clase-card" *ngFor="let clase of clases">
+    <div class="clase-top">
+      <div>
+        <h3>{{ clase.nombre }}</h3>
+        <div class="clase-tags">
+          <span class="tag">{{ clase.numEstudiantes }} alumnos</span>
+          <span class="tag">{{ clase.colegio }}</span>
+        </div>
+      </div>
+      <div class="codigo-badge">{{ clase.codigo }}</div>
+    </div>
+    <div class="progreso-row">
+      <span>Progreso</span>
+      <div class="prog-bar">
+        <div class="prog-fill" [style.width]="clase.progreso + '%'"></div>
+      </div>
+      <span class="prog-pct">{{ clase.progreso }}%</span>
+    </div>
+    <div class="clase-btns">
+      <button class="btn-detail" (click)="verDetalle(clase)">Ver detalle</button>
+      <button class="btn-orange">Métricas</button>
+      <button class="btn-yellow">Descargar reporte en PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- VISTA MIS CLASES -->
+<div class="content" *ngIf="vistaActual === 'clases'">
+  <div class="clases-header">
+    <h2>Mis clases</h2>
+    <button class="btn-orange" routerLink="/teacher/create-class">+ Nueva clase</button>
+  </div>
+
+  <div class="empty-state" *ngIf="clases.length === 0">
+    <div class="empty-icon">📚</div>
+    <h3>Aún no tienes clases</h3>
+    <p>Crea tu primera clase para empezar a gestionar a tus alumnos</p>
+    <button class="btn-orange" routerLink="/teacher/create-class">+ Crear mi primera clase</button>
+  </div>
+
+  <div class="clase-card" *ngFor="let clase of clases">
+    <div class="clase-top">
+      <div>
+        <h3>{{ clase.nombre }}</h3>
+        <div class="clase-tags">
+          <span class="tag">{{ clase.numEstudiantes }} alumnos</span>
+          <span class="tag">{{ clase.colegio }}</span>
+        </div>
+      </div>
+      <div class="codigo-badge">{{ clase.codigo }}</div>
+    </div>
+    <div class="progreso-row">
+      <span>Progreso</span>
+      <div class="prog-bar">
+        <div class="prog-fill" [style.width]="clase.progreso + '%'"></div>
+      </div>
+      <span class="prog-pct">{{ clase.progreso }}%</span>
+    </div>
+    <div class="clase-btns">
+      <button class="btn-detail" (click)="verDetalle(clase)">Ver detalle</button>
+      <button class="btn-orange">Métricas</button>
+      <button class="btn-yellow">Descargar reporte en PDF</button>
+    </div>
+  </div>
+</div>

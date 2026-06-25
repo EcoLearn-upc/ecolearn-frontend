@@ -1,0 +1,109 @@
+/* NAVBAR */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 40px;
+  background: var(--green-soft);
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--green-dark);
+  font-size: 15px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+}
+
+.btn-orange {
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 22px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* CONTENIDO */
+.container {
+  min-height: calc(100vh - 60px);
+  background: #FDF6EC;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.container h1 {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 42px;
+  color: var(--red);
+  margin-bottom: 10px;
+}
+
+.container h2 {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 28px;
+  color: var(--orange);
+  margin-bottom: 50px;
+}
+
+/* CARDS */
+.cards-row {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.role-card {
+  width: 260px;
+  height: 260px;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: transform 0.2s, border 0.2s;
+}
+
+.role-card:hover {
+  transform: scale(1.05);
+  border: 3px solid var(--orange);
+}
+
+.role-card img {
+  width: 90px;
+}
+
+.role-card h3 {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 26px;
+  color: #5a5a5a;
+}
+
+.role-card p {
+  font-family: 'Manjari', sans-serif;
+  font-size: 14px;
+  color: #888;
+}
+
+.card-blue   { background: #D6EAF8; }
+.card-yellow { background: #FAEBD7; }

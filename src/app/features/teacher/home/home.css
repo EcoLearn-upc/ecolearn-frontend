@@ -1,0 +1,243 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 40px;
+  background: var(--green-soft);
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--green-dark);
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.nav-links a.active {
+  border-bottom: 2px solid var(--green-dark);
+  padding-bottom: 2px;
+}
+
+.btn-orange {
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 22px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.btn-orange:hover { opacity: 0.9; }
+
+.btn-yellow {
+  background: #F5C542;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 18px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn-detail {
+  background: #D6EAF8;
+  color: #555;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 18px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* HERO */
+.hero {
+  background: var(--green-soft);
+  padding: 24px 40px;
+}
+
+.hero h1 {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 28px;
+  color: var(--green-dark);
+}
+
+.hero p {
+  font-family: 'Manjari', sans-serif;
+  font-size: 15px;
+  color: var(--text-gray);
+}
+
+/* CONTENT */
+.content {
+  background: #FDF6EC;
+  min-height: calc(100vh - 120px);
+  padding: 32px 40px;
+}
+
+/* METRICS */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.metric-card {
+  background: #fff;
+  border: 2px solid var(--green-soft);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+.metric-val {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 36px;
+  color: var(--green);
+  margin-bottom: 4px;
+}
+
+.metric-lbl {
+  font-family: 'Manjari', sans-serif;
+  font-size: 14px;
+  color: var(--text-gray);
+}
+
+/* CLASES */
+.clases-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.clases-header h2 {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 24px;
+  color: var(--green-dark);
+}
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: #fff;
+  border: 2px dashed var(--green-soft);
+  border-radius: 16px;
+}
+
+.empty-icon { font-size: 60px; margin-bottom: 16px; }
+
+.empty-state h3 {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 22px;
+  color: var(--green-dark);
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  font-family: 'Manjari', sans-serif;
+  font-size: 14px;
+  color: var(--text-gray);
+  margin-bottom: 24px;
+}
+
+/* CLASE CARD */
+.clase-card {
+  background: #fff;
+  border: 2px solid var(--green-soft);
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+
+.clase-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.clase-top h3 {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--green-dark);
+  margin-bottom: 8px;
+}
+
+.clase-tags {
+  display: flex;
+  gap: 8px;
+}
+
+.tag {
+  background: var(--green-soft);
+  color: var(--green-dark);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-family: 'Manjari', sans-serif;
+  font-size: 13px;
+}
+
+.codigo-badge {
+  background: #FAEBD7;
+  color: var(--green-dark);
+  border-radius: 12px;
+  padding: 6px 16px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.progreso-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-family: 'Manjari', sans-serif;
+  font-size: 14px;
+  color: var(--text-gray);
+}
+
+.prog-bar {
+  flex: 1;
+  background: var(--gray-soft);
+  border-radius: 8px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.prog-fill {
+  background: var(--green);
+  height: 8px;
+  border-radius: 8px;
+}
+
+.prog-pct {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.clase-btns {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}

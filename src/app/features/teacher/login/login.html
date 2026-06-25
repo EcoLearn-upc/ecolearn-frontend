@@ -1,0 +1,41 @@
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-logo">
+    <img src="logo.png" alt="EcoLearn" height="36">
+  </div>
+  <a class="nav-back" routerLink="/auth">← Volver</a>
+  <button class="btn-orange">Mi perfil</button>
+</nav>
+
+<!-- CONTENIDO -->
+<div class="container">
+  <div class="emoji">🤩</div>
+  <h1>¡Bienvenido!</h1>
+  <h2>Gestiona tus clases de manera fácil</h2>
+
+  <div class="form-box">
+    <label>Correo Electrónico</label>
+    <input
+      type="email"
+      placeholder="tucorreo@colegio.edu.pe"
+      [(ngModel)]="credentials.email">
+
+    <label>Contraseña</label>
+    <input
+      type="password"
+      placeholder="Tu contraseña"
+      [(ngModel)]="credentials.password">
+
+    <a class="forgot" href="#">¿Olvidaste tu contraseña?</a>
+
+    <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+    <button class="btn-yellow" (click)="onLogin()" [disabled]="loading">
+      {{ loading ? 'Iniciando...' : 'Iniciar sesión' }}
+    </button>
+
+    <button class="btn-orange" routerLink="/teacher/register">
+      ¿No tienes cuenta? Regístrate
+    </button>
+  </div>
+</div>

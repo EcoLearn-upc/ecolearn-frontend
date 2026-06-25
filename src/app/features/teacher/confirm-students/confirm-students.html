@@ -1,0 +1,49 @@
+<nav class="navbar">
+  <div class="nav-logo"><img src="logo.png" alt="EcoLearn" height="36"></div>
+  <a class="nav-back" routerLink="/teacher/add-students">← Volver</a>
+  <button class="btn-orange">Mi perfil</button>
+</nav>
+
+<div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div>
+
+<div class="container">
+  <h1>Revisar lista</h1>
+  <p class="file-info">{{ claseData?.nombre }} — {{ alumnos.length }} alumnos detectados</p>
+
+  <div class="info-row">
+    <div class="info-box" *ngIf="conObservacion > 0">
+      ℹ️ {{ alumnos.length - conObservacion }} alumnos listos y {{ conObservacion }} con observación. Revisa antes de importar
+    </div>
+    <div class="info-box" *ngIf="conObservacion === 0">
+      ✅ Todos los alumnos están listos para importar
+    </div>
+    <button class="btn-outline">Editar lista</button>
+  </div>
+
+  <!-- TABLA -->
+  <div class="tabla">
+    <div class="tabla-header">
+      <span>N°</span>
+      <span>Nombre completo</span>
+      <span>Estado</span>
+    </div>
+    <div class="tabla-row" *ngFor="let a of alumnos; let i = index"
+         [class.row-alt]="i % 2 !== 0">
+      <span>{{ i + 1 }}</span>
+      <span>{{ a.nombre }}</span>
+      <span class="badge" [class.badge-ok]="a.estado === 'Completo'"
+            [class.badge-warn]="a.estado === 'Por revisar'">
+        {{ a.estado }}
+      </span>
+    </div>
+  </div>
+
+  <!-- ADVERTENCIA -->
+  <div class="warn-box" *ngIf="conObservacion > 0">
+    ⚠️ {{ conObservacion }} alumno(s) tienen nombre incompleto. Puedes editarlos o importarlos igual.
+  </div>
+
+  <button class="btn-yellow" (click)="onImportar()">
+    Importar {{ alumnos.length }} alumnos
+  </button>
+</div>

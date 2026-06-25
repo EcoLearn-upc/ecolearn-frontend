@@ -1,0 +1,153 @@
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-logo"><img src="logo.png" alt="EcoLearn" height="36"></div>
+  <div class="nav-links">
+    <a routerLink="/student/home">Inicio</a>
+    <a routerLink="/student/home">Mi clase</a>
+  </div>
+  <button class="btn-orange">Mi perfil</button>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <div class="av-circle">{{ alumno?.avatar || '🌱' }}</div>
+    <div>
+      <h1>¡Hola, {{ alumno?.nombre?.split(',')[1]?.trim()?.split(' ')[0] || 'Alumno' }}!</h1>
+      <p>Nivel {{ perfil?.nivel || 1 }} · Guardiana del planeta</p>
+    </div>
+  </div>
+  <div class="xp-pill">⭐ {{ perfil?.puntos || 0 }} XP</div>
+</div>
+<div class="xpbar-wrap">
+  <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+    <span class="xp-lbl">Energía para el siguiente nivel</span>
+    <span class="xp-val">{{ perfil?.puntos || 0 }} / {{ (perfil?.nivel || 1) * 100 }} XP</span>
+  </div>
+  <div class="xpbar"><div class="xpfill" [style.width]="getPorcentajeNivel() + '%'"></div></div>
+</div>
+
+<!-- INPUT OCULTO -->
+<input type="file" id="file-input" style="display:none" (change)="onFileSelected($event)">
+
+<div class="content">
+
+  <!-- ESTADO IDLE -->
+  <div *ngIf="estado === 'idle'">
+
+    <!-- HERO CLASIFICADOR -->
+    <div class="clasificador-hero">
+      <div class="robot-icon">🤖</div>
+      <h2>¿Qué residuo es este?</h2>
+      <p>Sube una foto y la Inteligencia Artificial identifica el residuo al instante</p>
+      <div class="hero-btns">
+        <button class="btn-yellow" (click)="onTomarFoto()">📸 Tomar foto</button>
+        <button class="btn-green" (click)="onSubirImagen()">⬆️ Subir imagen</button>
+      </div>
+    </div>
+
+    <!-- TIPOS -->
+    <h3 class="section-title">¿Qué puedo clasificar?</h3>
+    <div class="tipos-grid">
+      <div class="tipo-card" *ngFor="let t of tipos"
+           [style.border-color]="getTipoColor(t.color)">
+        <span class="tipo-emoji">{{ t.emoji }}</span>
+        <div class="tipo-nombre" [style.color]="getTipoColor(t.color)">{{ t.nombre }}</div>
+        <div class="tipo-subtipo" [style.color]="getTipoColor(t.color)">{{ t.subtipo }}</div>
+      </div>
+    </div>
+
+    <!-- DESEMPEÑO -->
+    <div class="desempeno-box">
+      <h3>🌍 Mi desempeño</h3>
+      <div class="desempeno-grid">
+        <div class="des-card des-green">
+          <div class="des-val">{{ desempeno.clasificados }}</div>
+          <div class="des-lbl">residuos<br>clasificados</div>
+        </div>
+        <div class="des-card des-orange">
+          <div class="des-val">🔥 {{ desempeno.racha }}</div>
+          <div class="des-lbl">días<br>de racha</div>
+        </div>
+        <div class="des-card des-blue">
+          <div class="des-val">{{ desempeno.correctas }} / {{ desempeno.total }}</div>
+          <div class="des-lbl">clasificaciones<br>correctas</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECIENTES -->
+    <h3 class="section-title">🕓 Recientes</h3>
+    <div class="recientes-lista">
+      <div class="reciente-row" *ngFor="let r of recientes">
+        <span class="reciente-emoji">{{ r.emoji }}</span>
+        <div style="flex:1">
+          <div class="reciente-nombre">{{ r.nombre }}</div>
+          <div class="reciente-fecha">{{ r.fecha }}</div>
+        </div>
+        <span class="badge" [class]="getRecienteColor(r.color)">{{ r.tipo }}</span>
+        <span class="reciente-xp">+{{ r.xp }}XP</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ESTADO LOADING -->
+  <div class="estado-center" *ngIf="estado === 'loading'">
+    <div class="robot-icon">🤖</div>
+    <h2>Analizando imagen...</h2>
+    <p>La IA está identificando el residuo</p>
+    <div class="loader"></div>
+    <img [src]="imagenPreview" class="preview-img" *ngIf="imagenPreview">
+  </div>
+
+  <!-- ESTADO RESULTADO -->
+  <div *ngIf="estado === 'result'">
+    <div class="resultado-card">
+      <img [src]="imagenPreview" class="preview-img" *ngIf="imagenPreview">
+      <div class="resultado-clase">
+        <span class="badge" [class]="getTipoBadgeColor(resultado?.clase)">{{ resultado?.claseTraducida || resultado?.clase }}</span>
+      </div>
+      <div class="confianza-row">
+        <span class="confianza-lbl">Nivel de confianza</span>
+        <span class="confianza-val">{{ getConfianzaPct() }}%</span>
+      </div>
+      <div class="confianza-bar">
+        <div class="confianza-fill" [style.width]="getConfianzaPct() + '%'"></div>
+      </div>
+      <div class="resultado-btns">
+        <button class="btn-green" (click)="resetear()">
+          ✅ +{{ resultado?.puntosGanados }} XP ganados
+        </button>
+        <button class="btn-outline" (click)="resetear()">Clasificar otro</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ESTADO ERROR -->
+  <div class="estado-center" *ngIf="estado === 'error'">
+    <div style="font-size:60px">😕</div>
+    <h2>Ups, algo salió mal</h2>
+    <p>{{ errorMsg }}</p>
+    <button class="btn-green" (click)="resetear()">Intentar de nuevo</button>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="botnav">
+  <button class="bnav-btn" routerLink="/student/home">
+    <span class="bnav-icon">🏠</span><span class="bnav-lbl">Inicio</span>
+  </button>
+  <button class="bnav-btn" routerLink="/student/home" [queryParams]="{ tab: 'logros' }">
+    <span class="bnav-icon">⭐</span><span class="bnav-lbl">Logros</span>
+  </button>
+  <button class="bnav-btn on">
+    <span class="bnav-icon">🎥</span><span class="bnav-lbl">Clasificador de residuos</span>
+  </button>
+</div>
+
+<!-- ECOBOT FAB -->
+<button class="ecobot-fab">
+  <img src="logo.png" alt="EcoBot" style="width:32px;height:32px;border-radius:50%">
+</button>

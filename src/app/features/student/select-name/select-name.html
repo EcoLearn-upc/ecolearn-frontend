@@ -1,0 +1,41 @@
+<nav class="navbar">
+  <div class="nav-logo"><img src="logo.png" alt="EcoLearn" height="36"></div>
+  <a class="nav-back" routerLink="/student/class-code">← Volver</a>
+  <button class="btn-orange">Mi perfil</button>
+</nav>
+
+<div class="progress-bar">
+  <div class="progress-fill" style="width: 50%"></div>
+</div>
+
+<div class="container">
+  <div class="emoji">🤩</div>
+  <h1>¡Bienvenido!</h1>
+  <h2>Selecciona tu nombre</h2>
+
+  <select [(ngModel)]="selectedAlumno" class="select-nombre">
+    <option value="">— Selecciona tu nombre —</option>
+    <option *ngFor="let a of alumnos; let i = index" [value]="a">
+      Alumno {{ i + 1 }} — {{ a }}
+    </option>
+  </select>
+
+  <div class="avatar-section" *ngIf="selectedAlumno">
+    <h3>Elige tu avatar</h3>
+    <div class="avatar-grid">
+      <div
+        class="avatar-item"
+        *ngFor="let av of avatares"
+        [class.selected]="selectedAvatar === av"
+        (click)="seleccionarAvatar(av)">
+        {{ av }}
+      </div>
+    </div>
+  </div>
+
+  <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+  <button class="btn-green" (click)="onIngresar()" *ngIf="selectedAlumno">
+    ¡Ingresar a mi clase!
+  </button>
+</div>

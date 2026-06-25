@@ -1,0 +1,138 @@
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-logo"><img src="logo.png" alt="EcoLearn" height="36"></div>
+  <div class="nav-links">
+    <a routerLink="/teacher/home">Inicio</a>
+    <a routerLink="/teacher/home">Mis clases</a>
+  </div>
+  <button class="btn-orange">Mi perfil</button>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <h1>{{ clase?.nombre }}</h1>
+    <p>{{ clase?.colegio }} · {{ clase?.numAlumnos }} alumnos</p>
+    <div class="prog-row">
+      <span>Progreso general</span>
+      <div class="prog-bar">
+        <div class="prog-fill" [style.width]="clase?.progreso + '%'"></div>
+      </div>
+      <span class="prog-pct">{{ clase?.progreso }}%</span>
+    </div>
+  </div>
+  <div class="codigo-badge">{{ clase?.codigo }}</div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab" [class.active]="activeTab==='alumnos'" (click)="setTab('alumnos')">Alumnos</button>
+  <button class="tab" [class.active]="activeTab==='ranking'" (click)="setTab('ranking')">Ranking</button>
+  <button class="tab" [class.active]="activeTab==='pins'" (click)="setTab('pins')">PINs</button>
+</div>
+
+<div class="content">
+
+  <!-- ── TAB ALUMNOS ── -->
+  <div *ngIf="activeTab === 'alumnos'">
+    <div class="section-header">
+      <h2>Lista de alumnos</h2>
+      <button class="btn-outline">Descargar reporte</button>
+    </div>
+    <div class="lista">
+      <div class="alumno-row" *ngFor="let a of alumnos">
+        <div class="alumno-av">👤</div>
+        <span class="alumno-nombre">{{ a.nombre }}</span>
+        <span class="alumno-xp">{{ a.xp }} XP</span>
+        <span class="badge" [class]="getEstadoClass(a.estado)">{{ a.estado }}</span>
+      </div>
+      <div class="empty" *ngIf="alumnos.length === 0">No hay alumnos registrados.</div>
+    </div>
+  </div>
+
+  <!-- ── TAB RANKING ── -->
+  <div *ngIf="activeTab === 'ranking'">
+    <h2 class="section-title">Ranking de la clase</h2>
+
+    <!-- PODIO TOP 3 -->
+    <div class="podio" *ngIf="alumnos.length > 0">
+      <!-- 2do lugar -->
+      <div class="podio-item" *ngIf="getTop3()[1]">
+        <div class="podio-av av-2">👤</div>
+        <div class="podio-nombre">{{ getNombreCorto(getTop3()[1].nombre) }}</div>
+        <div class="podio-xp">{{ getTop3()[1].xp }} XP</div>
+        <div class="podio-barra barra-2"></div>
+        <div class="podio-pos pos-2">2</div>
+      </div>
+      <!-- 1er lugar -->
+      <div class="podio-item" *ngIf="getTop3()[0]">
+        <div class="podio-av av-1">👤</div>
+        <div class="podio-nombre green">{{ getNombreCorto(getTop3()[0].nombre) }}</div>
+        <div class="podio-xp">{{ getTop3()[0].xp }} XP</div>
+        <div class="podio-barra barra-1"></div>
+        <div class="podio-pos pos-1">1</div>
+      </div>
+      <!-- 3er lugar -->
+      <div class="podio-item" *ngIf="getTop3()[2]">
+        <div class="podio-av av-3">👤</div>
+        <div class="podio-nombre">{{ getNombreCorto(getTop3()[2].nombre) }}</div>
+        <div class="podio-xp">{{ getTop3()[2].xp }} XP</div>
+        <div class="podio-barra barra-3"></div>
+        <div class="podio-pos pos-3">3</div>
+      </div>
+    </div>
+
+    <!-- LISTA RANKING -->
+    <div class="lista">
+      <div class="rank-row" *ngFor="let a of getRanking(); let i = index">
+        <span class="rank-num">{{ i + 1 }}</span>
+        <div class="alumno-av">👤</div>
+        <span class="alumno-nombre">{{ a.nombre }}</span>
+        <span class="alumno-xp">{{ a.xp }} XP</span>
+      </div>
+      <div class="empty" *ngIf="alumnos.length === 0">Sin datos de ranking aún.</div>
+    </div>
+  </div>
+
+  <!-- ── TAB PINs ── -->
+  <div *ngIf="activeTab === 'pins'">
+    <div class="warn-pins">
+      🔐 Esta sección es <strong>solo para el docente</strong>. Los PINs son personales — compártelos de forma privada con cada alumno. Si un alumno olvida su PIN, puedes regenerarlo aquí.
+    </div>
+
+    <div class="section-header">
+      <h2>PINs de acceso</h2>
+      <div style="display:flex;gap:8px">
+        <button class="btn-mostrar" (click)="toggleAllPins()">
+          👁 {{ showAllPins ? 'Ocultar todos' : 'Mostrar todos' }}
+        </button>
+        <button class="btn-orange">Descargar PDF</button>
+      </div>
+    </div>
+
+    <div class="lista">
+      <div class="pins-header">
+        <span>Alumno</span>
+        <span style="text-align:center">PIN</span>
+        <span style="text-align:center">Acción</span>
+      </div>
+      <div class="pin-row" *ngFor="let a of alumnos">
+        <div style="display:flex;align-items:center;gap:12px;flex:1">
+          <div class="alumno-av">👤</div>
+          <span class="alumno-nombre">{{ a.nombre }}</span>
+        </div>
+        <span class="pin-val">
+          {{ isPinVisible(a.nombre) ? a.pin : '● ● ● ●' }}
+        </span>
+        <div class="pin-acciones">
+          <button class="btn-icon" (click)="togglePin(a.nombre)" [title]="isPinVisible(a.nombre) ? 'Ocultar' : 'Mostrar'">
+            {{ isPinVisible(a.nombre) ? '🙈' : '👁' }}
+          </button>
+          <button class="btn-icon btn-regen" (click)="regenPin(a)" title="Regenerar PIN">🔄</button>
+        </div>
+      </div>
+      <div class="empty" *ngIf="alumnos.length === 0">Sin alumnos registrados.</div>
+    </div>
+  </div>
+
+</div>

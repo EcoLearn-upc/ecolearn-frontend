@@ -1,0 +1,50 @@
+<nav class="navbar">
+  <div class="nav-logo"><img src="logo.png" alt="EcoLearn" height="36"></div>
+  <a class="nav-back" routerLink="/teacher/home">← Volver</a>
+  <button class="btn-orange">Mi perfil</button>
+</nav>
+
+<div class="container">
+  <!-- AVATAR -->
+  <div class="avatar-circle">🎉</div>
+
+  <h1>¡Clase creada!</h1>
+  <p class="subtitle">{{ claseData?.alumnos?.length }} alumnos importados correctamente</p>
+
+  <!-- CÓDIGO -->
+  <div class="codigo-box">
+    <p class="codigo-lbl">Código de clase generado</p>
+    <div class="codigo">{{ claseData?.codigo }}</div>
+    <p class="codigo-sub">Comparte este código con tus alumnos para que ingresen</p>
+    <div class="codigo-btns">
+      <button class="btn-copiar" (click)="copiarCodigo()">
+        {{ copiado ? '✅ Copiado' : 'Copiar código' }}
+      </button>
+      <button class="btn-compartir">Compartir</button>
+    </div>
+  </div>
+
+  <!-- RESUMEN -->
+  <div class="resumen">
+    <div class="resumen-row">
+      <span class="resumen-lbl">Nombre</span>
+      <span class="resumen-val green">{{ claseData?.nombre }}</span>
+    </div>
+    <div class="resumen-row">
+      <span class="resumen-lbl">Colegio</span>
+      <span class="resumen-val">{{ claseData?.colegio }}</span>
+    </div>
+    <div class="resumen-row">
+      <span class="resumen-lbl">Total alumnos</span>
+      <span class="resumen-val green">{{ claseData?.alumnos?.length }}</span>
+    </div>
+    <div class="resumen-row" *ngIf="conObservacion > 0">
+      <span class="resumen-lbl">Con observación</span>
+      <span class="resumen-val red">{{ conObservacion }} — revisar después</span>
+    </div>
+  </div>
+
+  <!-- BOTONES -->
+  <button class="btn-ver" (click)="verClase()">Ver mi clase →</button>
+  <button class="btn-otra" (click)="crearOtra()">Crear otra clase</button>
+</div>

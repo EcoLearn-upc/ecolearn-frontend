@@ -97,12 +97,14 @@ export class Classifier implements OnInit {
 
     this.residuoService.clasificar(file).subscribe({
       next: (res) => {
+        console.log('Respuesta del backend:', res);
         this.resultado = {
           clase: res.categoriaDetectada,
           confianza: res.confianza,
           puntosGanados: res.puntosGanados,
           esCorrecta: res.esCorrecta,
-          claseTraducida: this.traducirClase(res.categoriaDetectada)
+          claseTraducida: this.traducirClase(res.categoriaDetectada),
+          recomendacion: res.recomendacion
         };
         this.guardarReciente(res.categoriaDetectada, this.resultado.claseTraducida, res.puntosGanados);
         this.cargarPerfil();

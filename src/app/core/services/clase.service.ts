@@ -29,7 +29,9 @@ export interface AlumnoCreado {
   nombre: string;
   pin: string;
   email: string;
+  puntos?: number;
 }
+
 export interface InfoClasePublica {
   claseId: string;
   nombre: string;

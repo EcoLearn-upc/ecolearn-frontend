@@ -37,8 +37,7 @@
   <div *ngIf="activeTab === 'alumnos'">
     <div class="section-header">
       <h2>Lista de alumnos</h2>
-      <button class="btn-outline">Descargar reporte</button>
-    </div>
+      <button class="btn-outline" (click)="descargarReporte()">Descargar reporte</button>    </div>
     <div class="lista">
       <div class="alumno-row" *ngFor="let a of alumnos">
         <div class="alumno-av">👤</div>

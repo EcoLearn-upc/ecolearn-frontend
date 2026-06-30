@@ -104,6 +104,9 @@
   <!-- ESTADO RESULTADO -->
   <div *ngIf="estado === 'result'">
     <div class="resultado-card">
+      <div class="recomendacion-box" *ngIf="resultado?.recomendacion">
+        <p>💡 {{ resultado.recomendacion }}</p>
+      </div>
       <img [src]="imagenPreview" class="preview-img" *ngIf="imagenPreview">
       <div class="resultado-clase">
         <span class="badge" [class]="getTipoBadgeColor(resultado?.clase)">{{ resultado?.claseTraducida || resultado?.clase }}</span>

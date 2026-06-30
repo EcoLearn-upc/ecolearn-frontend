@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ClaseService } from '../../../core/services/clase.service';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-class-detail',
@@ -16,38 +18,55 @@ export class ClassDetail implements OnInit {
   pinsVisible: { [key: string]: boolean } = {};
   showAllPins = false;
 
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private claseService: ClaseService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     const claseData = localStorage.getItem('nuevaClase');
-    if (claseData) {
-      const data = JSON.parse(claseData);
-      this.clase = {
-        nombre: data.nombre,
-        colegio: data.colegio,
-        numAlumnos: data.alumnos?.length || 0,
-        codigo: data.codigo,
-        progreso: 0
-      };
-      if (data.alumnosConPin) {
-        this.alumnos = data.alumnosConPin;
-      } else {
-        this.alumnos = (data.alumnos || []).map((nombre: string) => ({
-          nombre,
-          xp: 0,
-          estado: 'Activo',
-          pin: this.generarPin()
-        }));
-        data.alumnosConPin = this.alumnos;
-        localStorage.setItem('nuevaClase', JSON.stringify(data));
-      }
-    } else {
-      this.router.navigate(['/teacher/home']);
-    }
-  }
+    if (!claseData) { this.router.navigate(['/teacher/home']); return; }
 
-  generarPin(): string {
-    return String(Math.floor(1000 + Math.random() * 9000));
+    const data = JSON.parse(claseData);
+    this.clase = {
+      nombre: data.nombre,
+      colegio: data.colegio,
+      numAlumnos: data.alumnosCreados?.length || data.alumnos?.length || 0,
+      codigo: data.codigo,
+      progreso: 0
+    };
+
+    if (data.alumnosCreados?.length) {
+      this.alumnos = data.alumnosCreados.map((a: any) => ({
+        id: a.id,
+        nombre: a.nombre,
+        pin: a.pin,
+        xp: 0,
+        estado: 'Activo'
+      }));
+    } else if (data.alumnosConPin) {
+      this.alumnos = data.alumnosConPin;
+    }
+    console.log('Alumnos locales:', this.alumnos);
+    if (data.claseId) {
+      this.claseService.obtenerAlumnos(data.claseId).subscribe({
+        next: (alumnosBackend: any[]) => {
+          console.log('Alumnos del backend:', alumnosBackend);
+          this.alumnos = this.alumnos.map(a => {
+            const backendAlumno = alumnosBackend.find((b: any) => b.id === a.id);
+            return {
+              ...a,
+              xp: backendAlumno?.puntos || 0
+            };
+          });
+          console.log('Alumnos actualizados:', this.alumnos);
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Error al cargar alumnos:', err)
+      });
+    }
   }
 
   setTab(tab: string) {
@@ -68,11 +87,7 @@ export class ClassDetail implements OnInit {
   }
 
   regenPin(alumno: any) {
-    alumno.pin = this.generarPin();
-    // guardar en sessionStorage
-    const data = JSON.parse(localStorage.getItem('nuevaClase') || '{}');
-    data.alumnosConPin = this.alumnos;
-    localStorage.setItem('nuevaClase', JSON.stringify(data));
+    // PIN ya no se regenera localmente — viene del backend
   }
 
   getTop3(): any[] {
@@ -97,5 +112,21 @@ export class ClassDetail implements OnInit {
       return `${primerNombre} ${apellido[0]}.`;
     }
     return nombre.split(' ')[0];
+  }
+
+  descargarReporte() {
+    const datos = this.alumnos.map(a => ({
+      Nombre: a.nombre,
+      XP: a.xp,
+      PIN: a.pin,
+      Estado: a.estado
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(datos);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Alumnos');
+
+    const nombreClase = this.clase?.nombre?.replace(/\s+/g, '_') || 'clase';
+    XLSX.writeFile(workbook, `reporte_${nombreClase}.xlsx`);
   }
 }

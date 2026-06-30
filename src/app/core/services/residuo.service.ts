@@ -13,7 +13,17 @@ export interface ResultadoClasificacion {
   puntosGanados: number;
   fecha: string;
 }
-
+export interface ResultadoClasificacion {
+  id: string;
+  usuarioId: string;
+  gridFsId: string;
+  categoriaDetectada: string;
+  confianza: number;
+  esCorrecta: boolean;
+  puntosGanados: number;
+  fecha: string;
+  recomendacion: string;
+}
 @Injectable({ providedIn: 'root' })
 export class ResiduoService {
 

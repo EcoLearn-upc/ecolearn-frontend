@@ -42,10 +42,10 @@ export class ConfirmStudents implements OnInit {
       colegio: this.claseData.colegio,
       codigoAcceso: this.claseData.codigo
     }).subscribe({
-      next: (claseCreada) => {
+      next: (claseCreada: any) => {
         this.claseService.agregarAlumnos(claseCreada.id, this.claseData.alumnos)
           .subscribe({
-            next: (alumnosCreados) => {
+            next: (alumnosCreados: any[]) => {
               const dataFinal = {
                 ...this.claseData,
                 codigo: claseCreada.codigoAcceso,
@@ -56,13 +56,13 @@ export class ConfirmStudents implements OnInit {
               this.loading = false;
               this.router.navigate(['/teacher/class-created']);
             },
-            error: (err) => {
+            error: (err: any) => {
               this.loading = false;
               this.errorMsg = err.error?.error || 'Error al agregar alumnos';
             }
           });
       },
-      error: (err) => {
+      error: (err: any) => {
         this.loading = false;
         this.errorMsg = err.error?.error || 'Error al crear la clase';
       }

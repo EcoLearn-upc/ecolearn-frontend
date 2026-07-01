@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://ecolearn-backend-u6t8.onrender.com/api'
+  apiUrl: 'https://ecolearn-backend-qrrk.onrender.com/api'
 };

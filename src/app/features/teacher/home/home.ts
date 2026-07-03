@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
+import { ClaseService } from '../../../core/services/clase.service';
 
 @Component({
   selector: 'app-home',
@@ -16,22 +17,27 @@ export class Home implements OnInit {
   totalAlumnos = 0;
   vistaActual = 'inicio';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private claseService: ClaseService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.user = this.authService.getUser();
-    const claseData = localStorage.getItem('nuevaClase');
-    if (claseData) {
-      const data = JSON.parse(claseData);
-      this.clases = [{
-        nombre: data.nombre,
-        colegio: data.colegio,
-        numEstudiantes: data.alumnos?.length || 0,
-        codigo: data.codigo,
-        progreso: 0
-      }];
-      this.totalAlumnos = data.alumnos?.length || 0;
-    }
+    this.claseService.misClases().subscribe({
+      next: (clases) => {
+        this.clases = clases.map((c: any) => ({
+          nombre: c.nombre,
+          colegio: c.colegio,
+          numEstudiantes: c.alumnosIds?.length || 0,
+          codigo: c.codigoAcceso,
+          progreso: 0
+        }));
+        this.totalAlumnos = this.clases.reduce((sum, c) => sum + c.numEstudiantes, 0);
+      },
+      error: () => {}
+    });
   }
 
   verDetalle(clase: any) {

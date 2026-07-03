@@ -39,7 +39,6 @@ export interface InfoClasePublica {
   alumnos: string[];
 }
 
-
 @Injectable({ providedIn: 'root' })
 export class ClaseService {
 
@@ -63,9 +62,12 @@ export class ClaseService {
     return this.http.get<AlumnoCreado[]>(`${this.apiUrl}/clases/${claseId}/alumnos`);
   }
 
-  // agregar dentro de la clase ClaseService:
   obtenerPorCodigo(codigoAcceso: string): Observable<InfoClasePublica> {
     return this.http.get<InfoClasePublica>(`${this.apiUrl}/clases/codigo/${codigoAcceso}`);
+  }
+
+  obtenerDetallePorCodigo(codigoAcceso: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/clases/codigo/${codigoAcceso}/detalle`);
   }
 
   loginEstudiante(codigoAcceso: string, nombre: string, pin: string): Observable<{ token: string }> {

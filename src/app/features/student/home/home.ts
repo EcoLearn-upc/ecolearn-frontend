@@ -2,7 +2,8 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UsuarioService, PerfilUsuario, UsuarioRanking } from '../../../core/services/usuario.service';
+import { forkJoin } from 'rxjs';
+import { UsuarioService, PerfilUsuario } from '../../../core/services/usuario.service';
 import { RetoService } from '../../../core/services/reto.service';
 import { ChatbotService } from '../../../core/services/chatbot.service';
 import { LogroService } from '../../../core/services/logro.service';
@@ -28,7 +29,6 @@ export class HomeStudent implements OnInit {
 
   perfil: PerfilUsuario | null = null;
   misiones: any[] = [];
-  ranking: UsuarioRanking[] = [];
   logros: any[] = [];
 
   constructor(
@@ -53,7 +53,6 @@ export class HomeStudent implements OnInit {
     this.cargarPerfil();
     this.cargarClase();
     this.cargarMisiones();
-    this.cargarRanking();
     this.cargarLogros();
   }
 
@@ -79,31 +78,29 @@ export class HomeStudent implements OnInit {
   }
 
   cargarMisiones() {
-    this.retoService.activos().subscribe({
-      next: (retos) => {
-        this.retoService.misRetos().subscribe({
-          next: (misRetos) => {
-            this.misiones = retos.map(r => {
-              const ru = misRetos.find(m => m.retoId === r.id);
-              const progreso = ru ? ru.progreso : 0;
-              const pct = r.meta > 0 ? Math.round((progreso / r.meta) * 100) : 0;
-              return {
-                retoId: r.id,
-                titulo: r.titulo,
-                xp: r.puntosRecompensa,
-                progreso: pct,
-                actual: progreso,
-                total: r.meta,
-                inscrito: !!ru,
-                completado: ru?.completado || false,
-                color: ru?.completado ? 'green' : progreso > 0 ? 'yellow' : 'red',
-                badge: `${progreso}/${r.meta}`
-              };
-            });
-            this.cdr.detectChanges();
-          },
-          error: () => this.misiones = []
+    forkJoin({
+      retos: this.retoService.activos(),
+      misRetos: this.retoService.misRetos()
+    }).subscribe({
+      next: ({ retos, misRetos }) => {
+        this.misiones = retos.map(r => {
+          const ru = misRetos.find(m => m.retoId === r.id);
+          const progreso = ru ? ru.progreso : 0;
+          const pct = r.meta > 0 ? Math.round((progreso / r.meta) * 100) : 0;
+          return {
+            retoId: r.id,
+            titulo: r.titulo,
+            xp: r.puntosRecompensa,
+            progreso: pct,
+            actual: progreso,
+            total: r.meta,
+            inscrito: !!ru,
+            completado: ru?.completado || false,
+            color: ru?.completado ? 'green' : progreso > 0 ? 'yellow' : 'red',
+            badge: `${progreso}/${r.meta}`
+          };
         });
+        this.cdr.detectChanges();
       },
       error: () => this.misiones = []
     });
@@ -116,26 +113,17 @@ export class HomeStudent implements OnInit {
     });
   }
 
-  cargarRanking() {
-    this.usuarioService.ranking().subscribe({
-      next: (r) => { this.ranking = r; this.cdr.detectChanges(); },
-      error: () => this.ranking = []
-    });
-  }
-
   cargarLogros() {
-    this.logroService.todos().subscribe({
-      next: (todos) => {
-        this.logroService.misLogros().subscribe({
-          next: (misLogros) => {
-            this.logros = todos.map(l => {
-              const obtenido = misLogros.find(m => m.logroId === l.id);
-              return { ...l, obtenido: !!obtenido, fechaObtenido: obtenido?.fechaObtenido || null };
-            });
-            this.cdr.detectChanges();
-          },
-          error: () => this.logros = []
+    forkJoin({
+      todos: this.logroService.todos(),
+      misLogros: this.logroService.misLogros()
+    }).subscribe({
+      next: ({ todos, misLogros }) => {
+        this.logros = todos.map(l => {
+          const obtenido = misLogros.find(m => m.logroId === l.id);
+          return { ...l, obtenido: !!obtenido, fechaObtenido: obtenido?.fechaObtenido || null };
         });
+        this.cdr.detectChanges();
       },
       error: () => this.logros = []
     });

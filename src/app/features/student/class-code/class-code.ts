@@ -29,9 +29,10 @@ export class ClassCode {
 
     this.claseService.obtenerPorCodigo(this.codigo.trim().toUpperCase()).subscribe({
       next: (info) => {
-        localStorage.setItem('claseAlumno', JSON.stringify(info));
         this.loading = false;
-        this.router.navigate(['/student/select-name']);
+        this.router.navigate(['/student/select-name'], {
+          state: { claseInfo: info }
+        });
       },
       error: (err) => {
         this.loading = false;

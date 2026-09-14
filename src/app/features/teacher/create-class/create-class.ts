@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../../core/services/auth.service';
+import { UsuarioService } from '../../../core/services/usuario.service';
 
 @Component({
   selector: 'app-create-class',
@@ -17,10 +17,6 @@ export class CreateClass implements OnInit {
     'cuarto': '4', 'quinto': '5', 'sexto': '6'
   };
 
-  nivelMap: { [key: string]: string } = {
-    'primaria': 'P', 'secundaria': 'S'
-  };
-
   data = {
     nombre: '',
     grado: '',
@@ -32,13 +28,13 @@ export class CreateClass implements OnInit {
   errorMsg = '';
   loading = false;
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router, private usuarioService: UsuarioService) {}
 
   ngOnInit() {
-    const user = this.authService.getUser();
-    if (user?.colegio) {
-      this.data.colegio = user.colegio;
-    }
+    this.usuarioService.perfil().subscribe({
+      next: (p) => { if (p.colegio) this.data.colegio = p.colegio; },
+      error: () => {}
+    });
   }
 
   generarCodigo(): string {
@@ -56,7 +52,8 @@ export class CreateClass implements OnInit {
       return;
     }
     const codigo = this.generarCodigo();
-    sessionStorage.setItem('nuevaClase', JSON.stringify({ ...this.data, codigo }));
-    this.router.navigate(['/teacher/add-students']);
+    this.router.navigate(['/teacher/add-students'], {
+      state: { claseData: { ...this.data, codigo } }
+    });
   }
 }

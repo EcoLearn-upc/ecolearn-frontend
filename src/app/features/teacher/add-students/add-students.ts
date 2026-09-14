@@ -17,12 +17,12 @@ export class AddStudents implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit() {
-    const data = sessionStorage.getItem('nuevaClase');
-    if (!data) {
+    const state = history.state as { claseData?: any };
+    if (!state?.claseData) {
       this.router.navigate(['/teacher/create-class']);
       return;
     }
-    this.claseData = JSON.parse(data);
+    this.claseData = state.claseData;
   }
 
   agregarAlumno() {
@@ -41,11 +41,9 @@ export class AddStudents implements OnInit {
 
   onSiguiente() {
     const filtrados = this.alumnos.filter(a => a.trim() !== '');
-    if (filtrados.length === 0) {
-      return;
-    }
-    const data = { ...this.claseData, alumnos: filtrados };
-    localStorage.setItem('nuevaClase', JSON.stringify(data));
-    this.router.navigate(['/teacher/confirm-students']);
+    if (filtrados.length === 0) return;
+    this.router.navigate(['/teacher/confirm-students'], {
+      state: { claseData: { ...this.claseData, alumnos: filtrados } }
+    });
   }
 }

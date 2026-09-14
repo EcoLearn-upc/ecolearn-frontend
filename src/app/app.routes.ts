@@ -26,7 +26,7 @@ export const routes: Routes = [
   { path: 'teacher/create-class', component: CreateClass, canActivate: [authGuard], data: { redirectTo: '/teacher/login' } },
   { path: 'teacher/add-students', component: AddStudents, canActivate: [authGuard], data: { redirectTo: '/teacher/login' } },
   { path: 'teacher/confirm-students', component: ConfirmStudents, canActivate: [authGuard], data: { redirectTo: '/teacher/login' } },
-  { path: 'teacher/class-created', component: ClassCreated, canActivate: [authGuard], data: { redirectTo: '/teacher/login' } },
+  { path: 'teacher/class-created/:codigo', component: ClassCreated, canActivate: [authGuard], data: { redirectTo: '/teacher/login' } },
   { path: 'teacher/class-detail/:id', component: ClassDetail, canActivate: [authGuard], data: { redirectTo: '/teacher/login' } },
   { path: 'student/class-code', component: ClassCode },
   { path: 'student/select-name', component: SelectName },

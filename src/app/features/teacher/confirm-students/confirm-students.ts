@@ -20,9 +20,12 @@ export class ConfirmStudents implements OnInit {
   constructor(private router: Router, private claseService: ClaseService) {}
 
   ngOnInit() {
-    const data = localStorage.getItem('nuevaClase');
-    if (!data) { this.router.navigate(['/teacher/add-students']); return; }
-    this.claseData = JSON.parse(data);
+    const state = history.state as { claseData?: any };
+    if (!state?.claseData) {
+      this.router.navigate(['/teacher/add-students']);
+      return;
+    }
+    this.claseData = state.claseData;
     this.alumnos = this.claseData.alumnos.map((nombre: string) => {
       const partes = nombre.trim().split(' ');
       const observacion = partes.length < 3;
@@ -46,15 +49,11 @@ export class ConfirmStudents implements OnInit {
         this.claseService.agregarAlumnos(claseCreada.id, this.claseData.alumnos)
           .subscribe({
             next: (alumnosCreados: any[]) => {
-              const dataFinal = {
-                ...this.claseData,
-                codigo: claseCreada.codigoAcceso,
-                claseId: claseCreada.id,
-                alumnosCreados
-              };
-              localStorage.setItem('nuevaClase', JSON.stringify(dataFinal));
               this.loading = false;
-              this.router.navigate(['/teacher/class-created']);
+              this.router.navigate(
+                ['/teacher/class-created', claseCreada.codigoAcceso],
+                { state: { alumnosCreados, alumnos: this.claseData.alumnos } }
+              );
             },
             error: (err: any) => {
               this.loading = false;

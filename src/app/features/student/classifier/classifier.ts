@@ -12,18 +12,13 @@ import { UsuarioService, PerfilUsuario } from '../../../core/services/usuario.se
 })
 export class Classifier implements OnInit {
 
-  alumno: any = null;
   perfil: PerfilUsuario | null = null;
+  alumno: any = null;
   estado: 'idle' | 'loading' | 'result' | 'error' = 'idle';
   resultado: any = null;
   imagenPreview: string | null = null;
   errorMsg = '';
-
-  recientes = [
-    { emoji: '🧴', nombre: 'Botella plástico', fecha: 'Hoy 10:32am', tipo: 'Reciclable', xp: 10, color: 'green' },
-    { emoji: '🍌', nombre: 'Cáscara de fruta', fecha: 'Ayer 2:15pm', tipo: 'Orgánico', xp: 10, color: 'yellow' },
-    { emoji: '📰', nombre: 'Papel Periódico', fecha: 'Lun 9:00am', tipo: 'Reciclable', xp: 10, color: 'green' },
-  ];
+  recientes: any[] = [];
 
   tipos = [
     { emoji: '♻️', nombre: 'Plástico', subtipo: 'Reciclable', color: 'green' },
@@ -32,12 +27,7 @@ export class Classifier implements OnInit {
     { emoji: '🥫', nombre: 'Metal', subtipo: 'Reciclable', color: 'red' },
   ];
 
-  desempeno = {
-    clasificados: 7,
-    racha: 5,
-    correctas: 6,
-    total: 7
-  };
+  desempeno = { clasificados: 0, racha: 0, correctas: 0, total: 0 };
 
   constructor(
     private residuoService: ResiduoService,
@@ -47,24 +37,56 @@ export class Classifier implements OnInit {
   ) {}
 
   ngOnInit() {
-    const alumnoData = localStorage.getItem('alumnoSeleccionado');
-    if (alumnoData) this.alumno = JSON.parse(alumnoData);
-    const recientesData = localStorage.getItem('recientes');
-    if (recientesData) this.recientes = JSON.parse(recientesData);
     this.cargarPerfil();
+    this.cargarHistorial();
   }
 
   cargarPerfil() {
     this.usuarioService.perfil().subscribe({
-      next: (p) => { this.perfil = p; this.cdr.detectChanges(); },
+      next: (p) => {
+        this.perfil = p;
+        this.alumno = { nombre: p.nombre, avatar: '🌱' };
+        this.desempeno.clasificados = p.totalClasificaciones;
+        this.desempeno.correctas = p.clasificacionesCorrectas;
+        this.desempeno.total = p.totalClasificaciones;
+        this.cdr.detectChanges();
+      },
       error: () => this.perfil = null
     });
   }
 
+  cargarHistorial() {
+    this.residuoService.historial().subscribe({
+      next: (historial) => {
+        this.recientes = historial.slice(0, 5).map(r => ({
+          emoji: this.getEmojiPorClase(r.categoriaDetectada),
+          nombre: this.traducirClase(r.categoriaDetectada),
+          fecha: this.formatearFecha(r.fecha),
+          tipo: this.getTipoTexto(r.categoriaDetectada),
+          xp: r.puntosGanados,
+          color: this.getColorPorClase(r.categoriaDetectada)
+        }));
+        this.cdr.detectChanges();
+      },
+      error: () => this.recientes = []
+    });
+  }
+
+  formatearFecha(fecha: string): string {
+    const d = new Date(fecha);
+    const hoy = new Date();
+    const ayer = new Date();
+    ayer.setDate(hoy.getDate() - 1);
+    const hora = d.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+    if (d.toDateString() === hoy.toDateString()) return `Hoy ${hora}`;
+    if (d.toDateString() === ayer.toDateString()) return `Ayer ${hora}`;
+    return d.toLocaleDateString('es-PE', { weekday: 'short', day: 'numeric' }) + ` ${hora}`;
+  }
+
   getPorcentajeNivel(): number {
     if (!this.perfil) return 0;
-    const metaNivel = this.perfil.nivel * 100;
-    return Math.min(100, Math.round((this.perfil.puntos / metaNivel) * 100));
+    const UMBRAL = 100;
+    return Math.round((this.perfil.puntos % UMBRAL) / UMBRAL * 100);
   }
 
   onFileSelected(event: any) {
@@ -91,13 +113,11 @@ export class Classifier implements OnInit {
     const reader = new FileReader();
     reader.onload = (e: any) => { this.imagenPreview = e.target.result; };
     reader.readAsDataURL(file);
-
     this.estado = 'loading';
     this.errorMsg = '';
 
     this.residuoService.clasificar(file).subscribe({
       next: (res) => {
-        console.log('Respuesta del backend:', res);
         this.resultado = {
           clase: res.categoriaDetectada,
           confianza: res.confianza,
@@ -106,13 +126,12 @@ export class Classifier implements OnInit {
           claseTraducida: this.traducirClase(res.categoriaDetectada),
           recomendacion: res.recomendacion
         };
-        this.guardarReciente(res.categoriaDetectada, this.resultado.claseTraducida, res.puntosGanados);
-        this.cargarPerfil();
         this.estado = 'result';
+        this.cargarPerfil();
+        this.cargarHistorial();
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error:', err);
         this.estado = 'error';
         this.errorMsg = err.error?.error || 'No se pudo clasificar la imagen. Intenta con otra foto.';
       }
@@ -121,17 +140,10 @@ export class Classifier implements OnInit {
 
   traducirClase(clase: string): string {
     const map: any = {
-      'glass':      'Vidrio',
-      'plastic':    'Plástico',
-      'paper':      'Papel',
-      'cardboard':  'Cartón',
-      'metal':      'Metal',
-      'trash':      'Basura general',
-      'organic':    'Orgánico',
-      'biological': 'Orgánico',
-      'clothes':    'Ropa',
-      'shoes':      'Calzado',
-      'battery':    'Batería'
+      'glass': 'Vidrio', 'plastic': 'Plástico', 'paper': 'Papel',
+      'cardboard': 'Cartón', 'metal': 'Metal', 'trash': 'Basura general',
+      'organic': 'Orgánico', 'biological': 'Orgánico',
+      'clothes': 'Ropa', 'shoes': 'Calzado', 'battery': 'Batería'
     };
     return map[clase?.toLowerCase()] || clase;
   }
@@ -148,9 +160,9 @@ export class Classifier implements OnInit {
   }
 
   getTipoBadgeColor(tipo: string): string {
-    if (tipo?.toLowerCase().includes('plástico') || tipo?.toLowerCase().includes('plastic')) return 'badge-green';
-    if (tipo?.toLowerCase().includes('orgánico') || tipo?.toLowerCase().includes('organic')) return 'badge-yellow';
-    if (tipo?.toLowerCase().includes('papel') || tipo?.toLowerCase().includes('paper')) return 'badge-gray';
+    if (tipo?.toLowerCase().includes('plástico')) return 'badge-green';
+    if (tipo?.toLowerCase().includes('orgánico')) return 'badge-yellow';
+    if (tipo?.toLowerCase().includes('papel')) return 'badge-gray';
     if (tipo?.toLowerCase().includes('metal')) return 'badge-red';
     return 'badge-green';
   }
@@ -166,35 +178,21 @@ export class Classifier implements OnInit {
     return 'badge-gray';
   }
 
-  guardarReciente(clase: string, claseTraducida: string, xp: number) {
-    const nuevo = {
-      emoji: this.getEmojiPorClase(clase),
-      nombre: claseTraducida,
-      fecha: 'Hoy ' + new Date().toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' }),
-      tipo: this.getTipoTexto(clase),
-      xp: xp,
-      color: this.getColorPorClase(clase)
-    };
-    this.recientes.unshift(nuevo);
-    if (this.recientes.length > 5) this.recientes.pop();
-    localStorage.setItem('recientes', JSON.stringify(this.recientes));
-  }
-
   getEmojiPorClase(clase: string): string {
     const map: any = {
-      'glass': '🍶', 'plastic': '🧴', 'paper': '📰',
-      'cardboard': '📦', 'metal': '🥫', 'trash': '🗑️',
-      'organic': '🍌', 'biological': '🍌'
+      'glass': '🍶', 'plastic': '🧴', 'paper': '📰', 'cardboard': '📦',
+      'metal': '🥫', 'trash': '🗑️', 'organic': '🍌', 'biological': '🍌',
+      'clothes': '👕', 'shoes': '👟', 'battery': '🔋'
     };
     return map[clase?.toLowerCase()] || '♻️';
   }
 
   getTipoTexto(clase: string): string {
     const map: any = {
-      'glass': 'Reciclable', 'plastic': 'Reciclable',
-      'paper': 'Reciclable', 'cardboard': 'Reciclable',
-      'metal': 'Reciclable', 'trash': 'No reciclable',
-      'organic': 'Orgánico', 'biological': 'Orgánico'
+      'glass': 'Reciclable', 'plastic': 'Reciclable', 'paper': 'Reciclable',
+      'cardboard': 'Reciclable', 'metal': 'Reciclable', 'trash': 'No reciclable',
+      'organic': 'Orgánico', 'biological': 'Orgánico',
+      'clothes': 'Donación', 'shoes': 'Donación', 'battery': 'Especial'
     };
     return map[clase?.toLowerCase()] || 'Reciclable';
   }

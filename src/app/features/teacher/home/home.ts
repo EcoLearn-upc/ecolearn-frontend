@@ -3,6 +3,7 @@ import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
 import { ClaseService } from '../../../core/services/clase.service';
+import { UsuarioService, PerfilUsuario } from '../../../core/services/usuario.service';
 
 @Component({
   selector: 'app-home',
@@ -12,7 +13,7 @@ import { ClaseService } from '../../../core/services/clase.service';
 })
 export class Home implements OnInit {
 
-  user: any = null;
+  user: PerfilUsuario | null = null;
   clases: any[] = [];
   totalAlumnos = 0;
   vistaActual = 'inicio';
@@ -20,11 +21,16 @@ export class Home implements OnInit {
   constructor(
     private authService: AuthService,
     private claseService: ClaseService,
+    private usuarioService: UsuarioService,
     private router: Router
   ) {}
 
   ngOnInit() {
-    this.user = this.authService.getUser();
+    this.usuarioService.perfil().subscribe({
+      next: (p) => this.user = p,
+      error: () => {}
+    });
+
     this.claseService.misClases().subscribe({
       next: (clases) => {
         this.clases = clases.map((c: any) => ({

@@ -22,11 +22,13 @@ export class SelectName implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit() {
-    const data = localStorage.getItem('claseAlumno');
-    if (!data) { this.router.navigate(['/student/class-code']); return; }
-    const clase = JSON.parse(data);
-    this.alumnos = clase.alumnos || [];
-    this.codigoAcceso = clase.codigoAcceso;
+    const state = history.state as { claseInfo?: any };
+    if (!state?.claseInfo) {
+      this.router.navigate(['/student/class-code']);
+      return;
+    }
+    this.alumnos = state.claseInfo.alumnos || [];
+    this.codigoAcceso = state.claseInfo.codigoAcceso;
   }
 
   seleccionarAvatar(av: string) {
@@ -42,11 +44,12 @@ export class SelectName implements OnInit {
       this.errorMsg = 'Por favor elige un avatar';
       return;
     }
-    localStorage.setItem('alumnoSeleccionado', JSON.stringify({
-      nombre: this.selectedAlumno,
-      avatar: this.selectedAvatar,
-      codigoAcceso: this.codigoAcceso
-    }));
-    this.router.navigate(['/student/enter-pin']);
+    this.router.navigate(['/student/enter-pin'], {
+      state: {
+        nombre: this.selectedAlumno,
+        avatar: this.selectedAvatar,
+        codigoAcceso: this.codigoAcceso
+      }
+    });
   }
 }

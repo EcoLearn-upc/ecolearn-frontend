@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { UsuarioService, PerfilUsuario } from '../../../core/services/usuario.service';
 
 @Component({
   selector: 'app-welcome',
@@ -12,19 +13,30 @@ export class Welcome implements OnInit {
 
   alumno: any = null;
   clase: any = null;
+  perfil: PerfilUsuario | null = null;
 
-  misiones = 3;
+  misiones = 0;
   xp = 0;
   posicion = 0;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private usuarioService: UsuarioService) {}
 
   ngOnInit() {
-    const alumnoData = localStorage.getItem('alumnoSeleccionado');
-    const claseData = localStorage.getItem('claseAlumno');
-    if (!alumnoData) { this.router.navigate(['/student/class-code']); return; }
-    this.alumno = JSON.parse(alumnoData);
-    if (claseData) this.clase = JSON.parse(claseData);
+    const state = history.state as { nombre?: string; avatar?: string };
+    if (!state?.nombre) {
+      this.router.navigate(['/student/class-code']);
+      return;
+    }
+    this.alumno = { nombre: state.nombre, avatar: state.avatar || '🌱' };
+
+    this.usuarioService.perfil().subscribe({
+      next: (p) => {
+        this.perfil = p;
+        this.xp = p.puntos;
+        this.clase = { codigo: null, nombre: p.nombre, colegio: p.colegio };
+      },
+      error: () => {}
+    });
   }
 
   getNombreCorto(): string {

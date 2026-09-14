@@ -18,13 +18,6 @@ export interface PerfilUsuario {
   totalLogros: number;
 }
 
-export interface UsuarioRanking {
-  id: string;
-  nombre: string;
-  puntos: number;
-  nivel: number;
-}
-
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
 
@@ -34,9 +27,5 @@ export class UsuarioService {
 
   perfil(): Observable<PerfilUsuario> {
     return this.http.get<PerfilUsuario>(`${this.apiUrl}/usuarios/perfil`);
-  }
-
-  ranking(): Observable<UsuarioRanking[]> {
-    return this.http.get<UsuarioRanking[]>(`${this.apiUrl}/usuarios/ranking`);
   }
 }

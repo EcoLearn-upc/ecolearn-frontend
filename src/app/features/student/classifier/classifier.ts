@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ResiduoService } from '../../../core/services/residuo.service';
@@ -11,6 +11,8 @@ import { UsuarioService, PerfilUsuario } from '../../../core/services/usuario.se
   styleUrl: './classifier.css'
 })
 export class Classifier implements OnInit {
+
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   perfil: PerfilUsuario | null = null;
   alumno: any = null;
@@ -96,17 +98,15 @@ export class Classifier implements OnInit {
   }
 
   onTomarFoto() {
-    const input = document.getElementById('file-input') as HTMLInputElement;
-    input.accept = 'image/*';
-    input.capture = 'environment';
-    input.click();
+    this.fileInput.nativeElement.accept = 'image/*';
+    this.fileInput.nativeElement.setAttribute('capture', 'environment');
+    this.fileInput.nativeElement.click();
   }
 
   onSubirImagen() {
-    const input = document.getElementById('file-input') as HTMLInputElement;
-    input.accept = 'image/*';
-    input.removeAttribute('capture');
-    input.click();
+    this.fileInput.nativeElement.accept = 'image/*';
+    this.fileInput.nativeElement.removeAttribute('capture');
+    this.fileInput.nativeElement.click();
   }
 
   clasificarImagen(file: File) {

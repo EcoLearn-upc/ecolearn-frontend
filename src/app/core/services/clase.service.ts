@@ -73,4 +73,7 @@ export class ClaseService {
   loginEstudiante(codigoAcceso: string, nombre: string, pin: string): Observable<{ token: string }> {
     return this.http.post<{ token: string }>(`${this.apiUrl}/clases/login`, { codigoAcceso, nombre, pin });
   }
+  miClase(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/clases/mi-clase`);
+  }
 }

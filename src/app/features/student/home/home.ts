@@ -6,6 +6,7 @@ import { UsuarioService, PerfilUsuario, UsuarioRanking } from '../../../core/ser
 import { RetoService } from '../../../core/services/reto.service';
 import { ChatbotService } from '../../../core/services/chatbot.service';
 import { LogroService } from '../../../core/services/logro.service';
+import { ClaseService } from '../../../core/services/clase.service';
 
 @Component({
   selector: 'app-home',
@@ -37,16 +38,11 @@ export class HomeStudent implements OnInit {
     private retoService: RetoService,
     private chatbotService: ChatbotService,
     private logroService: LogroService,
+    private claseService: ClaseService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-    const alumnoData = localStorage.getItem('alumnoSeleccionado');
-    const claseData = localStorage.getItem('claseAlumno');
-    if (!alumnoData) { this.router.navigate(['/student/class-code']); return; }
-    this.alumno = JSON.parse(alumnoData);
-    if (claseData) this.clase = JSON.parse(claseData);
-
     this.route.queryParamMap.subscribe(params => {
       const tab = params.get('tab');
       if (tab === 'inicio' || tab === 'miclase' || tab === 'logros') {
@@ -55,6 +51,7 @@ export class HomeStudent implements OnInit {
     });
 
     this.cargarPerfil();
+    this.cargarClase();
     this.cargarMisiones();
     this.cargarRanking();
     this.cargarLogros();
@@ -62,8 +59,22 @@ export class HomeStudent implements OnInit {
 
   cargarPerfil() {
     this.usuarioService.perfil().subscribe({
-      next: (p) => { this.perfil = p; this.cdr.detectChanges(); },
+      next: (p) => {
+        this.perfil = p;
+        this.alumno = { nombre: p.nombre, avatar: '🌱' };
+        this.cdr.detectChanges();
+      },
       error: () => this.perfil = null
+    });
+  }
+
+  cargarClase() {
+    this.claseService.miClase().subscribe({
+      next: (c) => {
+        this.clase = c;
+        this.cdr.detectChanges();
+      },
+      error: () => this.clase = null
     });
   }
 
@@ -119,11 +130,7 @@ export class HomeStudent implements OnInit {
           next: (misLogros) => {
             this.logros = todos.map(l => {
               const obtenido = misLogros.find(m => m.logroId === l.id);
-              return {
-                ...l,
-                obtenido: !!obtenido,
-                fechaObtenido: obtenido?.fechaObtenido || null
-              };
+              return { ...l, obtenido: !!obtenido, fechaObtenido: obtenido?.fechaObtenido || null };
             });
             this.cdr.detectChanges();
           },
@@ -145,17 +152,16 @@ export class HomeStudent implements OnInit {
   }
 
   getNombreAlumno(): string {
-    return this.perfil?.nombre || this.alumno?.nombre || '';
+    return this.perfil?.nombre || '';
   }
 
   getPorcentajeNivel(): number {
     if (!this.perfil) return 0;
-    const metaNivel = this.perfil.nivel * 100;
-    return Math.min(100, Math.round((this.perfil.puntos / metaNivel) * 100));
+    const UMBRAL = 100;
+    return Math.round((this.perfil.puntos % UMBRAL) / UMBRAL * 100);
   }
 
   setTab(tab: string) { this.activeTab = tab; }
-
   abrirEcobot() { this.ecobotAbierto = true; }
   cerrarEcobot() { this.ecobotAbierto = false; }
 

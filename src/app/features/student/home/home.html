@@ -14,7 +14,7 @@
     <div class="av-circle">{{ alumno?.avatar || '🌱' }}</div>
     <div>
       <h1>¡Hola, {{ getNombreAlumno() }}!</h1>
-      <p>Nivel {{ perfil?.nivel || 1 }} · Guardiana del planeta</p>
+      <p>Nivel {{ perfil?.nivel || 1 }} · Guardián del planeta</p>
     </div>
   </div>
   <div class="xp-pill">⭐ {{ perfil?.puntos || 0 }} XP</div>
@@ -34,17 +34,23 @@
 
   <!-- VISTA INICIO -->
   <div class="two-cols" *ngIf="activeTab==='inicio'">
-    <!-- RANKING -->
+
+    <!-- RANKING DE CLASE -->
     <div class="ranking-box">
-      <div class="ranking-title">🏆 Ranking semanal!</div>
+      <div class="ranking-title">🏆 Ranking de tu clase</div>
       <div class="ranking-lista">
-        <div class="rank-row" *ngFor="let r of ranking; let i = index">
+        <div class="rank-row"
+             *ngFor="let a of clase?.alumnos; let i = index"
+             [style.background]="a.nombre === perfil?.nombre ? 'var(--green-light, #e8f5e9)' : ''">
           <span class="rank-num">{{ i + 1 }}</span>
           <div class="rank-av">👤</div>
-          <span class="rank-nombre">{{ r.nombre }}</span>
-          <span class="rank-xp">{{ r.puntos }} XP</span>
+          <span class="rank-nombre">
+            {{ getNombreCorto(a.nombre) }}
+            <span *ngIf="a.nombre === perfil?.nombre" style="font-size:11px;color:var(--green)"> (tú)</span>
+          </span>
+          <span class="rank-xp">{{ a.puntos }} XP</span>
         </div>
-        <div class="empty" *ngIf="ranking.length === 0">Sin datos aún</div>
+        <div class="empty" *ngIf="!clase?.alumnos?.length">Sin datos aún</div>
       </div>
     </div>
 
@@ -83,7 +89,30 @@
       <div class="clase-codigo">{{ clase?.codigo }}</div>
       <h2>{{ clase?.nombre }}</h2>
       <p>{{ clase?.colegio }}</p>
-      <div class="clase-tag">{{ clase?.numAlumnos || clase?.alumnos?.length }} alumnos</div>
+      <div class="clase-tag">{{ clase?.numAlumnos }} alumnos</div>
+    </div>
+
+    <div class="ranking-box" style="margin-top:16px">
+      <div class="ranking-title">🥇 Competencia del aula</div>
+      <div class="ranking-lista">
+        <div class="rank-row"
+             *ngFor="let a of clase?.alumnos; let i = index"
+             [style.background]="a.nombre === perfil?.nombre ? 'var(--green-light, #e8f5e9)' : ''">
+          <span class="rank-num">
+            {{ i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1 }}
+          </span>
+          <div class="rank-av">👤</div>
+          <div style="flex:1">
+            <div class="rank-nombre">
+              {{ getNombreCorto(a.nombre) }}
+              <span *ngIf="a.nombre === perfil?.nombre" style="font-size:11px;color:var(--green)"> (tú)</span>
+            </div>
+            <div style="font-size:11px;color:#888">Nivel {{ a.nivel }}</div>
+          </div>
+          <span class="rank-xp">{{ a.puntos }} XP</span>
+        </div>
+        <div class="empty" *ngIf="!clase?.alumnos?.length">Sin compañeros aún</div>
+      </div>
     </div>
   </div>
 

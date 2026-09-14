@@ -15,35 +15,27 @@ export class AuthService {
 
   login(data: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, data).pipe(
-      tap(res => {
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('user', JSON.stringify(res));
-      })
+      tap(res => this.setToken(res.token))
     );
   }
 
   register(data: RegisterRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, data).pipe(
-      tap(res => {
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('user', JSON.stringify(res));
-      })
+      tap(res => this.setToken(res.token))
     );
+  }
+
+  setToken(token: string): void {
+    localStorage.setItem('token', token);
   }
 
   logout(): void {
     localStorage.removeItem('token');
-    localStorage.removeItem('user');
     this.router.navigate(['/']);
   }
 
   getToken(): string | null {
     return localStorage.getItem('token');
-  }
-
-  getUser(): AuthResponse | null {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
   }
 
   isLoggedIn(): boolean {

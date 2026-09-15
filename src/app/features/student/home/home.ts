@@ -159,16 +159,19 @@ export class HomeStudent implements OnInit {
     this.chatMensajes.push({ tipo: 'user', texto: pregunta });
     this.chatInput = '';
     this.enviandoChat = true;
+    this.cdr.detectChanges();
 
     this.chatbotService.enviarMensaje(pregunta).subscribe({
       next: (historial) => {
         const ultimo = historial.mensajes[historial.mensajes.length - 1];
         this.chatMensajes.push({ tipo: 'bot', texto: ultimo.contenido });
         this.enviandoChat = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.chatMensajes.push({ tipo: 'bot', texto: 'EcoBot no está disponible ahora, intenta más tarde 🌱' });
         this.enviandoChat = false;
+        this.cdr.detectChanges();
       }
     });
   }

@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { forkJoin } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { ClaseService } from '../../../core/services/clase.service';
 import { UsuarioService, PerfilUsuario } from '../../../core/services/usuario.service';
@@ -22,17 +23,17 @@ export class Home implements OnInit {
     private authService: AuthService,
     private claseService: ClaseService,
     private usuarioService: UsuarioService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-    this.usuarioService.perfil().subscribe({
-      next: (p) => this.user = p,
-      error: () => {}
-    });
-
-    this.claseService.misClases().subscribe({
-      next: (clases) => {
+    forkJoin({
+      perfil: this.usuarioService.perfil(),
+      clases: this.claseService.misClases()
+    }).subscribe({
+      next: ({ perfil, clases }) => {
+        this.user = perfil;
         this.clases = clases.map((c: any) => ({
           nombre: c.nombre,
           colegio: c.colegio,
@@ -41,6 +42,7 @@ export class Home implements OnInit {
           progreso: 0
         }));
         this.totalAlumnos = this.clases.reduce((sum, c) => sum + c.numEstudiantes, 0);
+        this.cdr.detectChanges();
       },
       error: () => {}
     });

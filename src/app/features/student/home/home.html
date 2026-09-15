@@ -1,190 +1,1142 @@
-<!-- NAVBAR -->
+<!-- ========================================================= -->
+<!--                         NAVBAR                            -->
+<!-- ========================================================= -->
+
 <nav class="navbar">
-  <div class="nav-logo"><img src="logo.png" alt="EcoLearn" height="36"></div>
-  <div class="nav-links">
-    <a (click)="setTab('inicio')" [class.active]="activeTab==='inicio'" style="cursor:pointer">Inicio</a>
-    <a (click)="setTab('miclase')" [class.active]="activeTab==='miclase'" style="cursor:pointer">Mi clase</a>
+
+  <div class="nav-logo">
+    <img src="logo.png" alt="EcoLearn" height="36">
   </div>
-  <button class="btn-orange">Mi perfil</button>
+
+  <div class="nav-links">
+
+    <a
+      (click)="setTab('inicio')"
+      [class.active]="activeTab==='inicio'"
+      style="cursor:pointer"
+    >
+      Inicio
+    </a>
+
+    <a
+      (click)="setTab('miclase')"
+      [class.active]="activeTab==='miclase'"
+      style="cursor:pointer"
+    >
+      Mi clase
+    </a>
+
+    <a
+      (click)="setTab('aprende')"
+      [class.active]="activeTab==='aprende'"
+      style="cursor:pointer"
+    >
+      Aprende
+    </a>
+
+  </div>
+
+  <button class="btn-orange">
+    Mi perfil
+  </button>
+
 </nav>
 
-<!-- HERO -->
+
+<!-- ========================================================= -->
+<!--                           HERO                            -->
+<!-- ========================================================= -->
+
 <div class="hero">
+
   <div class="hero-left">
-    <div class="av-circle">{{ alumno?.avatar || '🌱' }}</div>
-    <div>
-      <h1>¡Hola, {{ getNombreAlumno() }}!</h1>
-      <p>Nivel {{ perfil?.nivel || 1 }} · Guardián del planeta</p>
+
+    <div class="av-circle">
+      {{ alumno?.avatar || '🌱' }}
     </div>
+
+    <div>
+
+      <h1>
+        ¡Hola, {{ getNombreAlumno() }}!
+      </h1>
+
+      <p>
+        Nivel {{ perfil?.nivel || 1 }} · Guardián del planeta
+      </p>
+
+    </div>
+
   </div>
-  <div class="xp-pill">⭐ {{ perfil?.puntos || 0 }} XP</div>
+
+  <div class="xp-pill">
+    ⭐ {{ perfil?.puntos || 0 }} XP
+  </div>
+
 </div>
 
-<!-- XP BAR -->
+
+<!-- ========================================================= -->
+<!--                         XP BAR                            -->
+<!-- ========================================================= -->
+
 <div class="xpbar-wrap">
-  <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-    <span class="xp-lbl">Energía para el siguiente nivel</span>
-    <span class="xp-val">{{ perfil?.puntos || 0 }} / {{ (perfil?.nivel || 1) * 100 }} XP</span>
+
+  <div
+    style="
+      display:flex;
+      justify-content:space-between;
+      margin-bottom:4px
+    "
+  >
+
+    <span class="xp-lbl">
+      Energía para el siguiente nivel
+    </span>
+
+    <span class="xp-val">
+      {{ perfil?.puntos || 0 }}
+      /
+      {{ (perfil?.nivel || 1) * 100 }}
+      XP
+    </span>
+
   </div>
-  <div class="xpbar"><div class="xpfill" [style.width]="getPorcentajeNivel() + '%'"></div></div>
+
+  <div class="xpbar">
+
+    <div
+      class="xpfill"
+      [style.width]="getPorcentajeNivel() + '%'"
+    >
+    </div>
+
+  </div>
+
 </div>
 
-<!-- CONTENIDO -->
+
+<!-- ========================================================= -->
+<!--                        CONTENIDO                          -->
+<!-- ========================================================= -->
+
 <div class="content">
 
-  <!-- VISTA INICIO -->
-  <div class="two-cols" *ngIf="activeTab==='inicio'">
 
-    <!-- RANKING DE CLASE -->
+  <!-- ======================================================= -->
+  <!--                     VISTA INICIO                        -->
+  <!-- ======================================================= -->
+
+  <div
+    class="two-cols"
+    *ngIf="activeTab==='inicio'"
+  >
+
+
+    <!-- ================= RANKING DE CLASE ================= -->
+
     <div class="ranking-box">
-      <div class="ranking-title">🏆 Ranking de tu clase</div>
-      <div class="ranking-lista">
-        <div class="rank-row"
-             *ngFor="let a of clase?.alumnos; let i = index"
-             [style.background]="a.nombre === perfil?.nombre ? 'var(--green-light, #e8f5e9)' : ''">
-          <span class="rank-num">{{ i + 1 }}</span>
-          <div class="rank-av">👤</div>
-          <span class="rank-nombre">
-            {{ getNombreCorto(a.nombre) }}
-            <span *ngIf="a.nombre === perfil?.nombre" style="font-size:11px;color:var(--green)"> (tú)</span>
-          </span>
-          <span class="rank-xp">{{ a.puntos }} XP</span>
-        </div>
-        <div class="empty" *ngIf="!clase?.alumnos?.length">Sin datos aún</div>
+
+      <div class="ranking-title">
+        🏆 Ranking de tu clase
       </div>
+
+      <div class="ranking-lista">
+
+        <div
+          class="rank-row"
+          *ngFor="let a of clase?.alumnos; let i = index"
+          [style.background]="
+            a.nombre === perfil?.nombre
+              ? 'var(--green-light, #e8f5e9)'
+              : ''
+          "
+        >
+
+          <span class="rank-num">
+            {{ i + 1 }}
+          </span>
+
+          <div class="rank-av">
+            👤
+          </div>
+
+          <span class="rank-nombre">
+
+            {{ getNombreCorto(a.nombre) }}
+
+            <span
+              *ngIf="a.nombre === perfil?.nombre"
+              style="
+                font-size:11px;
+                color:var(--green)
+              "
+            >
+              (tú)
+            </span>
+
+          </span>
+
+          <span class="rank-xp">
+            {{ a.puntos }} XP
+          </span>
+
+        </div>
+
+        <div
+          class="empty"
+          *ngIf="!clase?.alumnos?.length"
+        >
+          Sin datos aún
+        </div>
+
+      </div>
+
     </div>
 
-    <!-- MISIONES -->
+
+    <!-- ===================== MISIONES ====================== -->
+
     <div class="misiones-box">
-      <h2 class="misiones-title">✅ Misiones activas</h2>
-      <div class="mision-card" *ngFor="let m of misiones" [class]="getMisionClass(m.color)">
+
+      <h2
+        class="misiones-title"
+      >
+        ✅ Misiones activas
+      </h2>
+
+      <div
+        class="mision-card"
+        *ngFor="let m of misiones"
+        [class]="getMisionClass(m.color)"
+      >
+
         <div class="mision-top">
-          <div class="mision-icon">🌿</div>
+
+          <div class="mision-icon">
+            🌿
+          </div>
+
           <div style="flex:1">
-            <div class="mision-nombre">{{ m.titulo }}</div>
-            <div class="mision-xp">+ {{ m.xp }} XP al completar</div>
+
+            <div class="mision-nombre">
+              {{ m.titulo }}
+            </div>
+
+            <div class="mision-xp">
+              + {{ m.xp }} XP al completar
+            </div>
+
           </div>
-          <div class="mision-badge" [class]="getBadgeClass(m.color)">{{ m.badge }}</div>
+
+          <div
+            class="mision-badge"
+            [class]="getBadgeClass(m.color)"
+          >
+            {{ m.badge }}
+          </div>
+
         </div>
+
+
         <div class="prog-row">
+
           <div class="prog-bar">
-            <div class="prog-fill" [style.width]="m.progreso + '%'"
-                 [style.background]="getProgBarColor(m.color)"></div>
+
+            <div
+              class="prog-fill"
+              [style.width]="m.progreso + '%'"
+              [style.background]="getProgBarColor(m.color)"
+            >
+            </div>
+
           </div>
-          <span class="prog-pct" [style.color]="getProgBarColor(m.color)">
+
+          <span
+            class="prog-pct"
+            [style.color]="getProgBarColor(m.color)"
+          >
             {{ m.actual }} / {{ m.total }}
           </span>
+
         </div>
-        <button *ngIf="!m.inscrito" class="btn-orange" style="margin-top:8px"
-                (click)="unirseAMision(m.retoId)">
+
+
+        <button
+          *ngIf="!m.inscrito"
+          class="btn-orange"
+          style="margin-top:8px"
+          (click)="unirseAMision(m.retoId)"
+        >
           Unirme a esta misión
         </button>
+
       </div>
+
     </div>
+
   </div>
 
-  <!-- VISTA MI CLASE -->
+
+  <!-- ======================================================= -->
+  <!--                    VISTA MI CLASE                       -->
+  <!-- ======================================================= -->
+
   <div *ngIf="activeTab==='miclase'">
+
     <div class="clase-info">
-      <div class="clase-codigo">{{ clase?.codigo }}</div>
-      <h2>{{ clase?.nombre }}</h2>
-      <p>{{ clase?.colegio }}</p>
-      <div class="clase-tag">{{ clase?.numAlumnos }} alumnos</div>
+
+      <div class="clase-codigo">
+        {{ clase?.codigo }}
+      </div>
+
+      <h2>
+        {{ clase?.nombre }}
+      </h2>
+
+      <p>
+        {{ clase?.colegio }}
+      </p>
+
+      <div class="clase-tag">
+        {{ clase?.numAlumnos }} alumnos
+      </div>
+
     </div>
 
-    <div class="ranking-box" style="margin-top:16px">
-      <div class="ranking-title">🥇 Competencia del aula</div>
+
+    <div
+      class="ranking-box"
+      style="margin-top:16px"
+    >
+
+      <div class="ranking-title">
+        🥇 Competencia del aula
+      </div>
+
       <div class="ranking-lista">
-        <div class="rank-row"
-             *ngFor="let a of clase?.alumnos; let i = index"
-             [style.background]="a.nombre === perfil?.nombre ? 'var(--green-light, #e8f5e9)' : ''">
+
+        <div
+          class="rank-row"
+          *ngFor="let a of clase?.alumnos; let i = index"
+          [style.background]="
+            a.nombre === perfil?.nombre
+              ? 'var(--green-light, #e8f5e9)'
+              : ''
+          "
+        >
+
           <span class="rank-num">
-            {{ i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1 }}
+
+            {{
+              i === 0
+                ? '🥇'
+                : i === 1
+                  ? '🥈'
+                  : i === 2
+                    ? '🥉'
+                    : i + 1
+            }}
+
           </span>
-          <div class="rank-av">👤</div>
-          <div style="flex:1">
-            <div class="rank-nombre">
-              {{ getNombreCorto(a.nombre) }}
-              <span *ngIf="a.nombre === perfil?.nombre" style="font-size:11px;color:var(--green)"> (tú)</span>
-            </div>
-            <div style="font-size:11px;color:#888">Nivel {{ a.nivel }}</div>
+
+          <div class="rank-av">
+            👤
           </div>
-          <span class="rank-xp">{{ a.puntos }} XP</span>
+
+          <div style="flex:1">
+
+            <div class="rank-nombre">
+
+              {{ getNombreCorto(a.nombre) }}
+
+              <span
+                *ngIf="a.nombre === perfil?.nombre"
+                style="
+                  font-size:11px;
+                  color:var(--green)
+                "
+              >
+                (tú)
+              </span>
+
+            </div>
+
+            <div
+              style="
+                font-size:11px;
+                color:#888
+              "
+            >
+              Nivel {{ a.nivel }}
+            </div>
+
+          </div>
+
+          <span class="rank-xp">
+            {{ a.puntos }} XP
+          </span>
+
         </div>
-        <div class="empty" *ngIf="!clase?.alumnos?.length">Sin compañeros aún</div>
+
+        <div
+          class="empty"
+          *ngIf="!clase?.alumnos?.length"
+        >
+          Sin compañeros aún
+        </div>
+
       </div>
+
     </div>
+
   </div>
 
-  <!-- VISTA LOGROS -->
+
+  <!-- ======================================================= -->
+  <!--                     VISTA LOGROS                        -->
+  <!-- ======================================================= -->
+
   <div *ngIf="activeTab==='logros'">
-    <h2 class="misiones-title" style="margin-bottom:16px">⭐ Mis logros</h2>
-    <div class="mision-card" *ngFor="let l of logros"
-         [class]="l.obtenido ? 'mision-green' : 'mision-yellow'"
-         [style.opacity]="l.obtenido ? 1 : 0.5">
+
+    <h2
+      class="misiones-title"
+      style="margin-bottom:16px"
+    >
+      ⭐ Mis logros
+    </h2>
+
+    <div
+      class="mision-card"
+      *ngFor="let l of logros"
+      [class]="
+        l.obtenido
+          ? 'mision-green'
+          : 'mision-yellow'
+      "
+      [style.opacity]="
+        l.obtenido
+          ? 1
+          : 0.5
+      "
+    >
+
       <div class="mision-top">
-        <div class="mision-icon">{{ l.icono }}</div>
+
+        <div class="mision-icon">
+          {{ l.icono }}
+        </div>
+
         <div style="flex:1">
-          <div class="mision-nombre">{{ l.nombre }}</div>
-          <div class="mision-xp">{{ l.descripcion }}</div>
+
+          <div class="mision-nombre">
+            {{ l.nombre }}
+          </div>
+
+          <div class="mision-xp">
+            {{ l.descripcion }}
+          </div>
+
         </div>
-        <div class="mision-badge" [class]="l.obtenido ? 'badge-green' : 'badge-yellow'">
-          {{ l.obtenido ? '✓ Obtenido' : 'Bloqueado' }}
+
+        <div
+          class="mision-badge"
+          [class]="
+            l.obtenido
+              ? 'badge-green'
+              : 'badge-yellow'
+          "
+        >
+
+          {{
+            l.obtenido
+              ? '✓ Obtenido'
+              : 'Bloqueado'
+          }}
+
         </div>
+
       </div>
+
     </div>
-    <div class="empty" *ngIf="logros.length === 0">Aún no hay logros disponibles</div>
+
+    <div
+      class="empty"
+      *ngIf="logros.length === 0"
+    >
+      Aún no hay logros disponibles
+    </div>
+
+  </div>
+
+
+  <!-- ======================================================= -->
+  <!--                  VISTA APRENDE / QUIZ                  -->
+  <!-- ======================================================= -->
+
+  <div *ngIf="activeTab==='aprende'">
+
+
+    <!-- ====================== CARGANDO ===================== -->
+
+    <div
+      *ngIf="cargandoQuiz"
+      style="
+        text-align:center;
+        padding:40px
+      "
+    >
+
+      <div style="font-size:40px">
+        ⏳
+      </div>
+
+      <p
+        style="
+          font-family:'Fredoka',sans-serif;
+          color:var(--green-dark)
+        "
+      >
+        Cargando preguntas...
+      </p>
+
+    </div>
+
+
+    <!-- ==================== CATEGORÍAS ==================== -->
+
+    <div
+      *ngIf="
+        !cargandoQuiz &&
+        vistaQuiz==='categorias'
+      "
+    >
+
+      <h2
+        class="misiones-title"
+        style="margin-bottom:8px"
+      >
+        🧠 ¡Aprende jugando!
+      </h2>
+
+      <p
+        style="
+          font-family:'Manjari',sans-serif;
+          font-size:14px;
+          color:#666;
+          margin-bottom:20px
+        "
+      >
+        Elige una categoría y responde
+        5 preguntas para ganar XP.
+      </p>
+
+
+      <!-- TARJETAS DE CATEGORÍAS -->
+
+      <div
+        style="
+          display:grid;
+          grid-template-columns:
+            repeat(
+              auto-fill,
+              minmax(140px,1fr)
+            );
+          gap:12px
+        "
+      >
+
+        <button
+          *ngFor="let cat of categoriasDisponibles"
+          (click)="seleccionarCategoria(cat.key)"
+          class="cat-card"
+          type="button"
+        >
+
+          <span style="font-size:32px">
+            {{ cat.emoji }}
+          </span>
+
+          <span class="cat-label">
+            {{ cat.label }}
+          </span>
+
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- ====================== PREGUNTAS =================== -->
+
+    <div
+      *ngIf="
+        !cargandoQuiz &&
+        vistaQuiz==='preguntas' &&
+        preguntasQuiz.length
+      "
+    >
+
+
+      <!-- CABECERA -->
+
+      <div
+        style="
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          margin-bottom:16px
+        "
+      >
+
+        <span
+          style="
+            font-family:'Fredoka',sans-serif;
+            font-size:14px;
+            color:var(--green-dark)
+          "
+        >
+          Pregunta
+          {{ preguntaActual + 1 }}
+          de
+          {{ preguntasQuiz.length }}
+        </span>
+
+        <span
+          style="
+            font-family:'Fredoka',sans-serif;
+            font-size:13px;
+            color:#888
+          "
+        >
+          {{ categoriaSeleccionada | titlecase }}
+        </span>
+
+      </div>
+
+
+      <!-- BARRA DE PROGRESO -->
+
+      <div
+        class="xpbar"
+        style="margin-bottom:20px"
+      >
+
+        <div
+          class="xpfill"
+          [style.width]="
+            (
+              preguntaActual /
+              preguntasQuiz.length *
+              100
+            ) + '%'
+          "
+        >
+        </div>
+
+      </div>
+
+
+      <!-- TARJETA DE PREGUNTA -->
+
+      <div
+        class="mision-card mision-green"
+        style="margin-bottom:16px"
+      >
+
+        <p
+          style="
+            font-family:'Fredoka',sans-serif;
+            font-size:17px;
+            color:#1b5e20;
+            margin:0
+          "
+        >
+          {{ preguntasQuiz[preguntaActual].pregunta }}
+        </p>
+
+        <span
+          style="
+            font-size:11px;
+            color:#888;
+            font-family:'Manjari',sans-serif
+          "
+        >
+          +{{ preguntasQuiz[preguntaActual].xp }}
+          XP si aciertas
+        </span>
+
+      </div>
+
+
+      <!-- ====================== OPCIONES ================== -->
+
+      <div
+        style="
+          display:flex;
+          flex-direction:column;
+          gap:10px;
+          margin-bottom:16px
+        "
+      >
+
+        <button
+          *ngFor="
+            let op of
+            preguntasQuiz[preguntaActual].opciones
+          "
+          (click)="seleccionarRespuesta(op)"
+          [class]="getOpcionClass(op)"
+          [disabled]="mostrarFeedback"
+          type="button"
+          style="
+            text-align:left;
+            padding:12px 16px;
+            border-radius:12px;
+            border:2px solid;
+            font-family:'Fredoka',sans-serif;
+            font-size:15px;
+            cursor:pointer;
+            transition:all .2s
+          "
+        >
+          {{ op }}
+        </button>
+
+      </div>
+
+
+      <!-- ====================== FEEDBACK ================== -->
+
+      <div
+        *ngIf="mostrarFeedback"
+        class="mision-card"
+        [class.mision-green]="esCorrecta()"
+        [class.mision-red]="!esCorrecta()"
+        style="margin-bottom:12px"
+      >
+
+        <p
+          style="
+            font-family:'Fredoka',sans-serif;
+            font-size:15px;
+            margin:0
+          "
+        >
+
+          {{
+            esCorrecta()
+              ? '✅ ¡Correcto!'
+              : '❌ Incorrecto'
+          }}
+
+        </p>
+
+        <p
+          style="
+            font-family:'Manjari',sans-serif;
+            font-size:13px;
+            margin:6px 0 0
+          "
+        >
+          {{ preguntasQuiz[preguntaActual].explicacion }}
+        </p>
+
+      </div>
+
+
+      <!-- ==================== CONFIRMAR =================== -->
+
+      <button
+        *ngIf="
+          !mostrarFeedback &&
+          respuestaSeleccionada
+        "
+        (click)="confirmarRespuesta()"
+        class="btn-orange"
+        type="button"
+        style="width:100%"
+      >
+        Confirmar respuesta
+      </button>
+
+
+      <!-- ===================== SIGUIENTE ================== -->
+
+      <button
+        *ngIf="mostrarFeedback"
+        (click)="siguientePregunta()"
+        class="btn-orange"
+        type="button"
+        style="width:100%"
+      >
+
+        {{
+          preguntaActual < preguntasQuiz.length - 1
+            ? 'Siguiente pregunta →'
+            : 'Ver resultado 🎉'
+        }}
+
+      </button>
+
+    </div>
+
+
+    <!-- ======================= RESULTADO ================= -->
+
+    <div
+      *ngIf="
+        !cargandoQuiz &&
+        vistaQuiz==='resultado' &&
+        resultadoQuiz
+      "
+      style="
+        text-align:center;
+        padding:20px 0
+      "
+    >
+
+      <!-- TROFEO -->
+
+      <div style="font-size:64px">
+
+        {{
+          resultadoQuiz.correctas === resultadoQuiz.total
+            ? '🏆'
+            : resultadoQuiz.correctas >= 3
+              ? '⭐'
+              : '💪'
+        }}
+
+      </div>
+
+
+      <!-- PUNTUACIÓN -->
+
+      <h2
+        style="
+          font-family:'Fredoka',sans-serif;
+          font-size:26px;
+          color:var(--green-dark);
+          margin:8px 0
+        "
+      >
+
+        {{ resultadoQuiz.correctas }}
+        /
+        {{ resultadoQuiz.total }}
+        correctas
+
+      </h2>
+
+
+      <!-- XP GANADOS -->
+
+      <div
+        class="xp-pill"
+        style="
+          display:inline-block;
+          margin:8px 0 20px
+        "
+      >
+        +{{ resultadoQuiz.puntosGanados }}
+        XP ganados
+      </div>
+
+
+      <!-- MENSAJE FINAL -->
+
+      <p
+        style="
+          font-family:'Manjari',sans-serif;
+          font-size:14px;
+          color:#666;
+          margin-bottom:24px
+        "
+      >
+
+        {{
+          resultadoQuiz.correctas === resultadoQuiz.total
+            ? '¡Perfecto! Eres un experto ambiental 🌍'
+            : resultadoQuiz.correctas >= 3
+              ? '¡Muy bien! Sigue aprendiendo 🌱'
+              : 'No te rindas, ¡practica más! ♻️'
+        }}
+
+      </p>
+
+
+      <!-- JUGAR OTRA VEZ -->
+
+      <button
+        (click)="reiniciarQuiz()"
+        class="btn-orange"
+        type="button"
+        style="width:100%"
+      >
+        Jugar otra vez
+      </button>
+
+    </div>
+
   </div>
 
 </div>
 
-<!-- BOTTOM NAV -->
+
+<!-- ========================================================= -->
+<!--                       BOTTOM NAV                          -->
+<!-- ========================================================= -->
+
 <div class="botnav">
-  <button class="bnav-btn" [class.on]="activeTab==='inicio'" (click)="setTab('inicio')">
-    <span class="bnav-icon">🏠</span><span class="bnav-lbl">Inicio</span>
+
+
+  <!-- INICIO -->
+
+  <button
+    class="bnav-btn"
+    [class.on]="activeTab==='inicio'"
+    (click)="setTab('inicio')"
+    type="button"
+  >
+
+    <span class="bnav-icon">
+      🏠
+    </span>
+
+    <span class="bnav-lbl">
+      Inicio
+    </span>
+
   </button>
-  <button class="bnav-btn" [class.on]="activeTab==='logros'" (click)="setTab('logros')">
-    <span class="bnav-icon">⭐</span><span class="bnav-lbl">Logros</span>
+
+
+  <!-- LOGROS -->
+
+  <button
+    class="bnav-btn"
+    [class.on]="activeTab==='logros'"
+    (click)="setTab('logros')"
+    type="button"
+  >
+
+    <span class="bnav-icon">
+      ⭐
+    </span>
+
+    <span class="bnav-lbl">
+      Logros
+    </span>
+
   </button>
-  <button class="bnav-btn" routerLink="/student/classifier">
-    <span class="bnav-icon">🎥</span><span class="bnav-lbl">Clasificador de residuos</span>
+
+
+  <!-- APRENDE -->
+
+  <button
+    class="bnav-btn"
+    [class.on]="activeTab==='aprende'"
+    (click)="setTab('aprende')"
+    type="button"
+  >
+
+    <span class="bnav-icon">
+      🧠
+    </span>
+
+    <span class="bnav-lbl">
+      Aprende
+    </span>
+
   </button>
+
+
+  <!-- CLASIFICADOR -->
+
+  <button
+    class="bnav-btn"
+    routerLink="/student/classifier"
+    type="button"
+  >
+
+    <span class="bnav-icon">
+      🎥
+    </span>
+
+    <span class="bnav-lbl">
+      Clasificador de residuos
+    </span>
+
+  </button>
+
 </div>
 
-<!-- ECOBOT FAB -->
-<button class="ecobot-fab" (click)="abrirEcobot()">
-  <img src="logo.png" alt="EcoBot" style="width:32px;height:32px;border-radius:50%">
+
+<!-- ========================================================= -->
+<!--                       ECOBOT FAB                          -->
+<!-- ========================================================= -->
+
+<button
+  class="ecobot-fab"
+  (click)="abrirEcobot()"
+  type="button"
+>
+
+  <img
+    src="logo.png"
+    alt="EcoBot"
+    style="
+      width:32px;
+      height:32px;
+      border-radius:50%
+    "
+  >
+
 </button>
 
-<!-- ECOBOT OVERLAY -->
-<div class="ecobot-overlay" *ngIf="ecobotAbierto" (click)="cerrarEcobot()"></div>
 
-<!-- ECOBOT PANEL -->
-<div class="ecobot-panel" *ngIf="ecobotAbierto">
+<!-- ========================================================= -->
+<!--                    ECOBOT OVERLAY                         -->
+<!-- ========================================================= -->
+
+<div
+  class="ecobot-overlay"
+  *ngIf="ecobotAbierto"
+  (click)="cerrarEcobot()"
+>
+</div>
+
+
+<!-- ========================================================= -->
+<!--                     ECOBOT PANEL                          -->
+<!-- ========================================================= -->
+
+<div
+  class="ecobot-panel"
+  *ngIf="ecobotAbierto"
+>
+
+
+  <!-- HEADER -->
+
   <div class="ecobot-header">
-    <div style="display:flex;align-items:center;gap:10px">
-      <div class="ecobot-av">🌱</div>
-      <div>
-        <div class="ecobot-nombre">EcoBot</div>
-        <div class="ecobot-status">● En línea</div>
+
+    <div
+      style="
+        display:flex;
+        align-items:center;
+        gap:10px
+      "
+    >
+
+      <div class="ecobot-av">
+        🌱
       </div>
+
+      <div>
+
+        <div class="ecobot-nombre">
+          EcoBot
+        </div>
+
+        <div class="ecobot-status">
+          ● En línea
+        </div>
+
+      </div>
+
     </div>
-    <button class="btn-cerrar" (click)="cerrarEcobot()">✕</button>
+
+
+    <button
+      class="btn-cerrar"
+      (click)="cerrarEcobot()"
+      type="button"
+    >
+      ✕
+    </button>
+
   </div>
+
+
+  <!-- CHAT -->
+
   <div class="chat-area">
-    <div *ngFor="let m of chatMensajes"
-         [class]="m.tipo === 'bot' ? 'bubble-bot' : 'bubble-user'">
+
+    <div
+      *ngFor="let m of chatMensajes"
+      [class]="
+        m.tipo === 'bot'
+          ? 'bubble-bot'
+          : 'bubble-user'
+      "
+    >
       {{ m.texto }}
     </div>
+
   </div>
+
+
+  <!-- CHIPS -->
+
   <div class="chat-chips">
-    <button class="chip" (click)="chatInput='¿Cómo reciclo plástico?';enviarMensaje()">♻️ Plástico</button>
-    <button class="chip" (click)="chatInput='¿Qué es el compostaje?';enviarMensaje()">🌱 Compostaje</button>
-    <button class="chip" (click)="chatInput='¿Qué hago con las pilas?';enviarMensaje()">🔋 Pilas</button>
+
+    <button
+      class="chip"
+      (click)="
+        chatInput='¿Cómo reciclo plástico?';
+        enviarMensaje()
+      "
+      type="button"
+    >
+      ♻️ Plástico
+    </button>
+
+    <button
+      class="chip"
+      (click)="
+        chatInput='¿Qué es el compostaje?';
+        enviarMensaje()
+      "
+      type="button"
+    >
+      🌱 Compostaje
+    </button>
+
+    <button
+      class="chip"
+      (click)="
+        chatInput='¿Qué hago con las pilas?';
+        enviarMensaje()
+      "
+      type="button"
+    >
+      🔋 Pilas
+    </button>
+
   </div>
+
+
+  <!-- INPUT -->
+
   <div class="chat-input-row">
-    <input [(ngModel)]="chatInput" placeholder="Escribe tu pregunta..."
-           (keydown.enter)="enviarMensaje()" class="chat-input">
-    <button class="btn-send" (click)="enviarMensaje()">➤</button>
+
+    <input
+      [(ngModel)]="chatInput"
+      placeholder="Escribe tu pregunta..."
+      (keydown.enter)="enviarMensaje()"
+      class="chat-input"
+    >
+
+    <button
+      class="btn-send"
+      (click)="enviarMensaje()"
+      type="button"
+    >
+      ➤
+    </button>
+
   </div>
+
 </div>

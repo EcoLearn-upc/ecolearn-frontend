@@ -8,6 +8,7 @@ import { RetoService } from '../../../core/services/reto.service';
 import { ChatbotService } from '../../../core/services/chatbot.service';
 import { LogroService } from '../../../core/services/logro.service';
 import { ClaseService } from '../../../core/services/clase.service';
+import { QuizService, Pregunta, ResultadoQuiz } from '../../../core/services/quiz.service';
 
 @Component({
   selector: 'app-home',
@@ -31,6 +32,27 @@ export class HomeStudent implements OnInit {
   misiones: any[] = [];
   logros: any[] = [];
 
+  // --- QUIZ ---
+  vistaQuiz: 'categorias' | 'preguntas' | 'resultado' = 'categorias';
+  categoriaSeleccionada: string | null = null;
+  preguntasQuiz: Pregunta[] = [];
+  preguntaActual = 0;
+  respuestaSeleccionada: string | null = null;
+  mostrarFeedback = false;
+  respuestasEnviadas: { preguntaId: string; respuesta: string }[] = [];
+  resultadoQuiz: ResultadoQuiz | null = null;
+  cargandoQuiz = false;
+
+  categoriasDisponibles = [
+    { key: 'plastico',  label: 'Plástico',  emoji: '♻️' },
+    { key: 'papel',     label: 'Papel',     emoji: '📄' },
+    { key: 'vidrio',    label: 'Vidrio',    emoji: '🫙' },
+    { key: 'metal',     label: 'Metal',     emoji: '🥫' },
+    { key: 'organico',  label: 'Orgánico',  emoji: '🌿' },
+    { key: 'bateria',   label: 'Baterías',  emoji: '🔋' },
+    { key: 'general',   label: 'General',   emoji: '🌍' },
+  ];
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -39,13 +61,14 @@ export class HomeStudent implements OnInit {
     private chatbotService: ChatbotService,
     private logroService: LogroService,
     private claseService: ClaseService,
+    private quizService: QuizService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     this.route.queryParamMap.subscribe(params => {
       const tab = params.get('tab');
-      if (tab === 'inicio' || tab === 'miclase' || tab === 'logros') {
+      if (tab === 'inicio' || tab === 'miclase' || tab === 'logros' || tab === 'aprende') {
         this.activeTab = tab;
       }
     });
@@ -129,6 +152,99 @@ export class HomeStudent implements OnInit {
     });
   }
 
+  // --- QUIZ METHODS ---
+
+  seleccionarCategoria(key: string) {
+    this.categoriaSeleccionada = key;
+    this.cargandoQuiz = true;
+    this.quizService.obtenerPreguntas(key).subscribe({
+      next: (preguntas) => {
+        this.preguntasQuiz = preguntas;
+        this.preguntaActual = 0;
+        this.respuestasEnviadas = [];
+        this.respuestaSeleccionada = null;
+        this.mostrarFeedback = false;
+        this.resultadoQuiz = null;
+        this.vistaQuiz = 'preguntas';
+        this.cargandoQuiz = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.cargandoQuiz = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  seleccionarRespuesta(opcion: string) {
+    if (this.mostrarFeedback) return;
+    this.respuestaSeleccionada = opcion;
+  }
+
+  confirmarRespuesta() {
+    if (!this.respuestaSeleccionada || this.mostrarFeedback) return;
+    const p = this.preguntasQuiz[this.preguntaActual];
+    this.respuestasEnviadas.push({ preguntaId: p.id, respuesta: this.respuestaSeleccionada });
+    this.mostrarFeedback = true;
+    this.cdr.detectChanges();
+  }
+
+  siguientePregunta() {
+    if (this.preguntaActual < this.preguntasQuiz.length - 1) {
+      this.preguntaActual++;
+      this.respuestaSeleccionada = null;
+      this.mostrarFeedback = false;
+      this.cdr.detectChanges();
+    } else {
+      this.enviarQuiz();
+    }
+  }
+
+  enviarQuiz() {
+    this.cargandoQuiz = true;
+    this.quizService.responder(this.respuestasEnviadas).subscribe({
+      next: (resultado) => {
+        this.resultadoQuiz = resultado;
+        this.vistaQuiz = 'resultado';
+        this.cargandoQuiz = false;
+        this.cargarPerfil();
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.cargandoQuiz = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  reiniciarQuiz() {
+    this.vistaQuiz = 'categorias';
+    this.categoriaSeleccionada = null;
+    this.preguntasQuiz = [];
+    this.preguntaActual = 0;
+    this.respuestaSeleccionada = null;
+    this.mostrarFeedback = false;
+    this.respuestasEnviadas = [];
+    this.resultadoQuiz = null;
+  }
+
+  esCorrecta(): boolean {
+    const p = this.preguntasQuiz[this.preguntaActual];
+    return this.respuestaSeleccionada === p?.respuestaCorrecta;
+  }
+
+  getOpcionClass(opcion: string): string {
+    if (!this.mostrarFeedback) {
+      return this.respuestaSeleccionada === opcion ? 'opcion-seleccionada' : 'opcion-normal';
+    }
+    const p = this.preguntasQuiz[this.preguntaActual];
+    if (opcion === p.respuestaCorrecta) return 'opcion-correcta';
+    if (opcion === this.respuestaSeleccionada) return 'opcion-incorrecta';
+    return 'opcion-normal';
+  }
+
+  // --- HELPERS GENERALES ---
+
   getNombreCorto(nombre: string): string {
     const partes = nombre.split(',');
     if (partes.length >= 2) {
@@ -149,7 +265,11 @@ export class HomeStudent implements OnInit {
     return Math.round((this.perfil.puntos % UMBRAL) / UMBRAL * 100);
   }
 
-  setTab(tab: string) { this.activeTab = tab; }
+  setTab(tab: string) {
+    this.activeTab = tab;
+    if (tab !== 'aprende') this.reiniciarQuiz();
+  }
+
   abrirEcobot() { this.ecobotAbierto = true; }
   cerrarEcobot() { this.ecobotAbierto = false; }
 

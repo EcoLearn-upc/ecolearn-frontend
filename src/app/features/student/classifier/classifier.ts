@@ -16,11 +16,17 @@ export class Classifier implements OnInit {
 
   perfil: PerfilUsuario | null = null;
   alumno: any = null;
-  estado: 'idle' | 'loading' | 'result' | 'error' = 'idle';
+  estado: 'idle' | 'loading' | 'pregunta' | 'result' | 'error' = 'idle';
   resultado: any = null;
   imagenPreview: string | null = null;
   errorMsg = '';
   recientes: any[] = [];
+
+  // datos del nuevo flujo con pregunta
+  sesionId: string | null = null;
+  opcionesPregunta: string[] = [];
+  respuestaSeleccionada: string | null = null;
+  adivinoCorrectamente: boolean | null = null;
 
   tipos = [
     { emoji: '♻️', nombre: 'Plástico', subtipo: 'Reciclable', color: 'green' },
@@ -116,15 +122,37 @@ export class Classifier implements OnInit {
     this.estado = 'loading';
     this.errorMsg = '';
 
-    this.residuoService.clasificar(file).subscribe({
+    this.residuoService.clasificarConPregunta(file).subscribe({
       next: (res) => {
+        this.sesionId = res.sesionId;
+        this.opcionesPregunta = res.opciones;
+        this.estado = 'pregunta';
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.estado = 'error';
+        this.errorMsg = err.error?.error || 'No se pudo clasificar la imagen. Intenta con otra foto.';
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  responderPregunta(opcion: string) {
+    if (!this.sesionId) return;
+    this.respuestaSeleccionada = opcion;
+    this.cdr.detectChanges();
+
+    this.residuoService.responderPrediccion(this.sesionId, opcion).subscribe({
+      next: (res) => {
+        this.adivinoCorrectamente = res.categoriaDetectada === opcion;
         this.resultado = {
           clase: res.categoriaDetectada,
           confianza: res.confianza,
           puntosGanados: res.puntosGanados,
           esCorrecta: res.esCorrecta,
           claseTraducida: this.traducirClase(res.categoriaDetectada),
-          recomendacion: res.recomendacion
+          recomendacion: res.recomendacion,
+          adivinoCorrectamente: res.categoriaDetectada === opcion
         };
         this.estado = 'result';
         this.cargarPerfil();
@@ -133,7 +161,8 @@ export class Classifier implements OnInit {
       },
       error: (err) => {
         this.estado = 'error';
-        this.errorMsg = err.error?.error || 'No se pudo clasificar la imagen. Intenta con otra foto.';
+        this.errorMsg = err.error?.error || 'Error al procesar tu respuesta.';
+        this.cdr.detectChanges();
       }
     });
   }
@@ -148,11 +177,24 @@ export class Classifier implements OnInit {
     return map[clase?.toLowerCase()] || clase;
   }
 
+  getEmojiPorClase(clase: string): string {
+    const map: any = {
+      'glass': '🍶', 'plastic': '🧴', 'paper': '📰', 'cardboard': '📦',
+      'metal': '🥫', 'trash': '🗑️', 'organic': '🍌', 'biological': '🍌',
+      'clothes': '👕', 'shoes': '👟', 'battery': '🔋'
+    };
+    return map[clase?.toLowerCase()] || '♻️';
+  }
+
   resetear() {
     this.estado = 'idle';
     this.resultado = null;
     this.imagenPreview = null;
     this.errorMsg = '';
+    this.sesionId = null;
+    this.opcionesPregunta = [];
+    this.respuestaSeleccionada = null;
+    this.adivinoCorrectamente = null;
   }
 
   getConfianzaPct(): number {
@@ -176,15 +218,6 @@ export class Classifier implements OnInit {
     if (color === 'green') return 'badge-green';
     if (color === 'yellow') return 'badge-yellow';
     return 'badge-gray';
-  }
-
-  getEmojiPorClase(clase: string): string {
-    const map: any = {
-      'glass': '🍶', 'plastic': '🧴', 'paper': '📰', 'cardboard': '📦',
-      'metal': '🥫', 'trash': '🗑️', 'organic': '🍌', 'biological': '🍌',
-      'clothes': '👕', 'shoes': '👟', 'battery': '🔋'
-    };
-    return map[clase?.toLowerCase()] || '♻️';
   }
 
   getTipoTexto(clase: string): string {

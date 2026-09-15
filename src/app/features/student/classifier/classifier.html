@@ -14,7 +14,7 @@
     <div class="av-circle">{{ alumno?.avatar || '🌱' }}</div>
     <div>
       <h1>¡Hola, {{ alumno?.nombre?.split(',')[1]?.trim()?.split(' ')[0] || 'Alumno' }}!</h1>
-      <p>Nivel {{ perfil?.nivel || 1 }} · Guardiana del planeta</p>
+      <p>Nivel {{ perfil?.nivel || 1 }} · Guardián del planeta</p>
     </div>
   </div>
   <div class="xp-pill">⭐ {{ perfil?.puntos || 0 }} XP</div>
@@ -34,8 +34,6 @@
 
   <!-- ESTADO IDLE -->
   <div *ngIf="estado === 'idle'">
-
-    <!-- HERO CLASIFICADOR -->
     <div class="clasificador-hero">
       <div class="robot-icon">🤖</div>
       <h2>¿Qué residuo es este?</h2>
@@ -46,7 +44,6 @@
       </div>
     </div>
 
-    <!-- TIPOS -->
     <h3 class="section-title">¿Qué puedo clasificar?</h3>
     <div class="tipos-grid">
       <div class="tipo-card" *ngFor="let t of tipos"
@@ -57,7 +54,6 @@
       </div>
     </div>
 
-    <!-- DESEMPEÑO -->
     <div class="desempeno-box">
       <h3>🌍 Mi desempeño</h3>
       <div class="desempeno-grid">
@@ -76,7 +72,6 @@
       </div>
     </div>
 
-    <!-- RECIENTES -->
     <h3 class="section-title">🕓 Recientes</h3>
     <div class="recientes-lista">
       <div class="reciente-row" *ngFor="let r of recientes">
@@ -89,7 +84,6 @@
         <span class="reciente-xp">+{{ r.xp }}XP</span>
       </div>
     </div>
-
   </div>
 
   <!-- ESTADO LOADING -->
@@ -101,15 +95,45 @@
     <img [src]="imagenPreview" class="preview-img" *ngIf="imagenPreview">
   </div>
 
+  <!-- ESTADO PREGUNTA -->
+  <div *ngIf="estado === 'pregunta'">
+    <div class="resultado-card">
+      <img [src]="imagenPreview" class="preview-img" *ngIf="imagenPreview">
+      <div class="robot-icon" style="font-size:40px;margin:16px 0">🤖</div>
+      <h2 style="text-align:center;margin-bottom:8px">¿Qué tipo de residuo es este?</h2>
+      <p style="text-align:center;color:#888;margin-bottom:24px">¡Adivina y gana XP extra! 🌟</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <button *ngFor="let opcion of opcionesPregunta"
+                class="btn-opcion"
+                [class.seleccionada]="respuestaSeleccionada === opcion"
+                (click)="responderPregunta(opcion)">
+          {{ getEmojiPorClase(opcion) }} {{ traducirClase(opcion) }}
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ESTADO RESULTADO -->
   <div *ngIf="estado === 'result'">
     <div class="resultado-card">
+      <div *ngIf="resultado?.adivinoCorrectamente"
+           style="text-align:center;font-size:40px;margin-bottom:8px">🎉</div>
+      <div *ngIf="!resultado?.adivinoCorrectamente"
+           style="text-align:center;font-size:40px;margin-bottom:8px">💪</div>
+      <h2 style="text-align:center;margin-bottom:4px">
+        {{ resultado?.adivinoCorrectamente ? '¡Lo adivinaste!' : '¡Casi!' }}
+      </h2>
+      <p style="text-align:center;color:#888;margin-bottom:16px">
+        {{ resultado?.adivinoCorrectamente ? '¡Ganaste XP extra por adivinar!' : 'La IA detectó: ' + resultado?.claseTraducida }}
+      </p>
       <div class="recomendacion-box" *ngIf="resultado?.recomendacion">
         <p>💡 {{ resultado.recomendacion }}</p>
       </div>
       <img [src]="imagenPreview" class="preview-img" *ngIf="imagenPreview">
       <div class="resultado-clase">
-        <span class="badge" [class]="getTipoBadgeColor(resultado?.clase)">{{ resultado?.claseTraducida || resultado?.clase }}</span>
+        <span class="badge" [class]="getTipoBadgeColor(resultado?.clase)">
+          {{ resultado?.claseTraducida || resultado?.clase }}
+        </span>
       </div>
       <div class="confianza-row">
         <span class="confianza-lbl">Nivel de confianza</span>

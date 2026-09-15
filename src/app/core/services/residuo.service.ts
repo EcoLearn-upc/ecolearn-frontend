@@ -12,18 +12,14 @@ export interface ResultadoClasificacion {
   esCorrecta: boolean;
   puntosGanados: number;
   fecha: string;
-}
-export interface ResultadoClasificacion {
-  id: string;
-  usuarioId: string;
-  gridFsId: string;
-  categoriaDetectada: string;
-  confianza: number;
-  esCorrecta: boolean;
-  puntosGanados: number;
-  fecha: string;
   recomendacion: string;
 }
+
+export interface ClasificacionPreguntaResponse {
+  sesionId: string;
+  opciones: string[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class ResiduoService {
 
@@ -35,6 +31,16 @@ export class ResiduoService {
     const formData = new FormData();
     formData.append('imagen', file);
     return this.http.post<ResultadoClasificacion>(`${this.apiUrl}/residuos/clasificar`, formData);
+  }
+
+  clasificarConPregunta(file: File): Observable<ClasificacionPreguntaResponse> {
+    const formData = new FormData();
+    formData.append('imagen', file);
+    return this.http.post<ClasificacionPreguntaResponse>(`${this.apiUrl}/residuos/clasificar-pregunta`, formData);
+  }
+
+  responderPrediccion(sesionId: string, respuestaUsuario: string): Observable<ResultadoClasificacion> {
+    return this.http.post<ResultadoClasificacion>(`${this.apiUrl}/residuos/responder-prediccion`, { sesionId, respuestaUsuario });
   }
 
   historial(): Observable<ResultadoClasificacion[]> {

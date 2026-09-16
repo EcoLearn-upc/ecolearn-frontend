@@ -76,4 +76,7 @@ export class ClaseService {
   miClase(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/clases/mi-clase`);
   }
+  obtenerMetricas(codigoAcceso: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/clases/codigo/${codigoAcceso}/metricas`);
+  }
 }

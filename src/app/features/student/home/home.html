@@ -1,1142 +1,371 @@
-<!-- ========================================================= -->
-<!--                         NAVBAR                            -->
-<!-- ========================================================= -->
-
+<!-- NAVBAR -->
 <nav class="navbar">
-
-  <div class="nav-logo">
-    <img src="logo.png" alt="EcoLearn" height="36">
-  </div>
-
+  <div class="nav-logo"><img src="logo.png" alt="EcoLearn" height="36"></div>
   <div class="nav-links">
-
-    <a
-      (click)="setTab('inicio')"
-      [class.active]="activeTab==='inicio'"
-      style="cursor:pointer"
-    >
-      Inicio
-    </a>
-
-    <a
-      (click)="setTab('miclase')"
-      [class.active]="activeTab==='miclase'"
-      style="cursor:pointer"
-    >
-      Mi clase
-    </a>
-
-    <a
-      (click)="setTab('aprende')"
-      [class.active]="activeTab==='aprende'"
-      style="cursor:pointer"
-    >
-      Aprende
-    </a>
-
+    <a (click)="setTab('inicio')" [class.active]="activeTab==='inicio'" style="cursor:pointer">Inicio</a>
+    <a (click)="setTab('aprende')" [class.active]="activeTab==='aprende'" style="cursor:pointer">Aprende</a>
   </div>
-
-  <button class="btn-orange">
-    Mi perfil
-  </button>
-
+  <button class="btn-orange">Mi perfil</button>
 </nav>
 
-
-<!-- ========================================================= -->
-<!--                           HERO                            -->
-<!-- ========================================================= -->
-
+<!-- HERO -->
 <div class="hero">
-
   <div class="hero-left">
-
-    <div class="av-circle">
-      {{ alumno?.avatar || '🌱' }}
-    </div>
-
+    <div class="av-circle">{{ alumno?.avatar || '🌱' }}</div>
     <div>
-
-      <h1>
-        ¡Hola, {{ getNombreAlumno() }}!
-      </h1>
-
-      <p>
-        Nivel {{ perfil?.nivel || 1 }} · Guardián del planeta
-      </p>
-
+      <h1>¡Hola, {{ getNombreAlumno() }}!</h1>
+      <p>Nivel {{ perfil?.nivel || 1 }} · Guardián del planeta</p>
     </div>
-
   </div>
-
-  <div class="xp-pill">
-    ⭐ {{ perfil?.puntos || 0 }} XP
-  </div>
-
+  <div class="xp-pill">⭐ {{ perfil?.puntos || 0 }} XP</div>
 </div>
 
-
-<!-- ========================================================= -->
-<!--                         XP BAR                            -->
-<!-- ========================================================= -->
-
+<!-- XP BAR -->
 <div class="xpbar-wrap">
-
-  <div
-    style="
-      display:flex;
-      justify-content:space-between;
-      margin-bottom:4px
-    "
-  >
-
-    <span class="xp-lbl">
-      Energía para el siguiente nivel
-    </span>
-
-    <span class="xp-val">
-      {{ perfil?.puntos || 0 }}
-      /
-      {{ (perfil?.nivel || 1) * 100 }}
-      XP
-    </span>
-
+  <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+    <span class="xp-lbl">Energía para el siguiente nivel</span>
+    <span class="xp-val">{{ perfil?.puntos || 0 }} / {{ (perfil?.nivel || 1) * 100 }} XP</span>
   </div>
-
-  <div class="xpbar">
-
-    <div
-      class="xpfill"
-      [style.width]="getPorcentajeNivel() + '%'"
-    >
-    </div>
-
-  </div>
-
+  <div class="xpbar"><div class="xpfill" [style.width]="getPorcentajeNivel() + '%'"></div></div>
 </div>
 
-
-<!-- ========================================================= -->
-<!--                        CONTENIDO                          -->
-<!-- ========================================================= -->
-
+<!-- CONTENIDO -->
 <div class="content">
 
+  <!-- VISTA INICIO -->
+  <div class="two-cols" *ngIf="activeTab==='inicio'">
 
-  <!-- ======================================================= -->
-  <!--                     VISTA INICIO                        -->
-  <!-- ======================================================= -->
+    <div style="display:flex;flex-direction:column;gap:16px;width:220px;flex-shrink:0">
 
-  <div
-    class="two-cols"
-    *ngIf="activeTab==='inicio'"
-  >
-
-
-    <!-- ================= RANKING DE CLASE ================= -->
-
-    <div class="ranking-box">
-
-      <div class="ranking-title">
-        🏆 Ranking de tu clase
+      <!-- CÓDIGO DE CLASE -->
+      <div style="background:#fff;border:2px solid var(--green-soft);border-radius:16px;padding:16px;text-align:center">
+        <div style="font-family:'Manjari',sans-serif;font-size:11px;color:#888;margin-bottom:6px">Código de tu clase</div>
+        <div class="clase-codigo" style="font-size:16px;padding:6px 14px">{{ clase?.codigo || '—' }}</div>
+        <div style="font-family:'Manjari',sans-serif;font-size:12px;color:#888;margin-top:6px">{{ clase?.nombre }}</div>
       </div>
 
-      <div class="ranking-lista">
-
-        <div
-          class="rank-row"
-          *ngFor="let a of clase?.alumnos; let i = index"
-          [style.background]="
-            a.nombre === perfil?.nombre
-              ? 'var(--green-light, #e8f5e9)'
-              : ''
-          "
-        >
-
-          <span class="rank-num">
-            {{ i + 1 }}
-          </span>
-
-          <div class="rank-av">
-            👤
-          </div>
-
-          <span class="rank-nombre">
-
-            {{ getNombreCorto(a.nombre) }}
-
-            <span
-              *ngIf="a.nombre === perfil?.nombre"
-              style="
-                font-size:11px;
-                color:var(--green)
-              "
-            >
-              (tú)
+      <!-- RANKING -->
+      <div class="ranking-box">
+        <div class="ranking-title">🏆 Ranking de tu clase</div>
+        <div class="ranking-lista">
+          <div class="rank-row" *ngFor="let a of clase?.alumnos; let i = index"
+               [style.background]="a.nombre === perfil?.nombre ? 'var(--green-light, #e8f5e9)' : ''">
+            <span class="rank-num">{{ i + 1 }}</span>
+            <div class="rank-av">👤</div>
+            <span class="rank-nombre">
+              {{ getNombreCorto(a.nombre) }}
+              <span *ngIf="a.nombre === perfil?.nombre" style="font-size:11px;color:var(--green)"> (tú)</span>
             </span>
-
-          </span>
-
-          <span class="rank-xp">
-            {{ a.puntos }} XP
-          </span>
-
+            <span class="rank-xp">{{ a.puntos }} XP</span>
+          </div>
+          <div class="empty" *ngIf="!clase?.alumnos?.length">Sin datos aún</div>
         </div>
-
-        <div
-          class="empty"
-          *ngIf="!clase?.alumnos?.length"
-        >
-          Sin datos aún
-        </div>
-
       </div>
 
     </div>
 
-
-    <!-- ===================== MISIONES ====================== -->
-
+    <!-- MISIONES -->
     <div class="misiones-box">
-
-      <h2
-        class="misiones-title"
-      >
-        ✅ Misiones activas
-      </h2>
-
-      <div
-        class="mision-card"
-        *ngFor="let m of misiones"
-        [class]="getMisionClass(m.color)"
-      >
-
+      <h2 class="misiones-title">✅ Misiones activas</h2>
+      <div class="mision-card" *ngFor="let m of misiones" [class]="getMisionClass(m.color)">
         <div class="mision-top">
-
-          <div class="mision-icon">
-            🌿
-          </div>
-
+          <div class="mision-icon">🌿</div>
           <div style="flex:1">
-
-            <div class="mision-nombre">
-              {{ m.titulo }}
-            </div>
-
-            <div class="mision-xp">
-              + {{ m.xp }} XP al completar
-            </div>
-
+            <div class="mision-nombre">{{ m.titulo }}</div>
+            <div class="mision-xp">+ {{ m.xp }} XP al completar</div>
           </div>
-
-          <div
-            class="mision-badge"
-            [class]="getBadgeClass(m.color)"
-          >
-            {{ m.badge }}
-          </div>
-
+          <div class="mision-badge" [class]="getBadgeClass(m.color)">{{ m.badge }}</div>
         </div>
-
-
         <div class="prog-row">
-
           <div class="prog-bar">
-
-            <div
-              class="prog-fill"
-              [style.width]="m.progreso + '%'"
-              [style.background]="getProgBarColor(m.color)"
-            >
-            </div>
-
+            <div class="prog-fill" [style.width]="m.progreso + '%'" [style.background]="getProgBarColor(m.color)"></div>
           </div>
-
-          <span
-            class="prog-pct"
-            [style.color]="getProgBarColor(m.color)"
-          >
-            {{ m.actual }} / {{ m.total }}
-          </span>
-
+          <span class="prog-pct" [style.color]="getProgBarColor(m.color)">{{ m.actual }} / {{ m.total }}</span>
         </div>
-
-
-        <button
-          *ngIf="!m.inscrito"
-          class="btn-orange"
-          style="margin-top:8px"
-          (click)="unirseAMision(m.retoId)"
-        >
+        <button *ngIf="!m.inscrito" class="btn-orange" style="margin-top:8px" (click)="unirseAMision(m.retoId)" type="button">
           Unirme a esta misión
         </button>
-
       </div>
-
     </div>
 
   </div>
 
-
-  <!-- ======================================================= -->
-  <!--                    VISTA MI CLASE                       -->
-  <!-- ======================================================= -->
-
+  <!-- VISTA MI CLASE -->
   <div *ngIf="activeTab==='miclase'">
-
     <div class="clase-info">
-
-      <div class="clase-codigo">
-        {{ clase?.codigo }}
-      </div>
-
-      <h2>
-        {{ clase?.nombre }}
-      </h2>
-
-      <p>
-        {{ clase?.colegio }}
-      </p>
-
-      <div class="clase-tag">
-        {{ clase?.numAlumnos }} alumnos
-      </div>
-
+      <div class="clase-codigo">{{ clase?.codigo }}</div>
+      <h2>{{ clase?.nombre }}</h2>
+      <p>{{ clase?.colegio }}</p>
+      <div class="clase-tag">{{ clase?.numAlumnos }} alumnos</div>
     </div>
-
-
-    <div
-      class="ranking-box"
-      style="margin-top:16px"
-    >
-
-      <div class="ranking-title">
-        🥇 Competencia del aula
-      </div>
-
+    <div class="ranking-box" style="margin-top:16px">
+      <div class="ranking-title">🥇 Competencia del aula</div>
       <div class="ranking-lista">
-
-        <div
-          class="rank-row"
-          *ngFor="let a of clase?.alumnos; let i = index"
-          [style.background]="
-            a.nombre === perfil?.nombre
-              ? 'var(--green-light, #e8f5e9)'
-              : ''
-          "
-        >
-
+        <div class="rank-row" *ngFor="let a of clase?.alumnos; let i = index"
+             [style.background]="a.nombre === perfil?.nombre ? 'var(--green-light, #e8f5e9)' : ''">
           <span class="rank-num">
-
-            {{
-              i === 0
-                ? '🥇'
-                : i === 1
-                  ? '🥈'
-                  : i === 2
-                    ? '🥉'
-                    : i + 1
-            }}
-
+            {{ i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1 }}
           </span>
-
-          <div class="rank-av">
-            👤
-          </div>
-
+          <div class="rank-av">👤</div>
           <div style="flex:1">
-
             <div class="rank-nombre">
-
               {{ getNombreCorto(a.nombre) }}
-
-              <span
-                *ngIf="a.nombre === perfil?.nombre"
-                style="
-                  font-size:11px;
-                  color:var(--green)
-                "
-              >
-                (tú)
-              </span>
-
+              <span *ngIf="a.nombre === perfil?.nombre" style="font-size:11px;color:var(--green)"> (tú)</span>
             </div>
-
-            <div
-              style="
-                font-size:11px;
-                color:#888
-              "
-            >
-              Nivel {{ a.nivel }}
-            </div>
-
+            <div style="font-size:11px;color:#888">Nivel {{ a.nivel }}</div>
           </div>
-
-          <span class="rank-xp">
-            {{ a.puntos }} XP
-          </span>
-
+          <span class="rank-xp">{{ a.puntos }} XP</span>
         </div>
-
-        <div
-          class="empty"
-          *ngIf="!clase?.alumnos?.length"
-        >
-          Sin compañeros aún
-        </div>
-
+        <div class="empty" *ngIf="!clase?.alumnos?.length">Sin compañeros aún</div>
       </div>
-
     </div>
-
   </div>
 
-
-  <!-- ======================================================= -->
-  <!--                     VISTA LOGROS                        -->
-  <!-- ======================================================= -->
-
+  <!-- VISTA LOGROS -->
   <div *ngIf="activeTab==='logros'">
-
-    <h2
-      class="misiones-title"
-      style="margin-bottom:16px"
-    >
-      ⭐ Mis logros
-    </h2>
-
-    <div
-      class="mision-card"
-      *ngFor="let l of logros"
-      [class]="
-        l.obtenido
-          ? 'mision-green'
-          : 'mision-yellow'
-      "
-      [style.opacity]="
-        l.obtenido
-          ? 1
-          : 0.5
-      "
-    >
-
+    <h2 class="misiones-title" style="margin-bottom:16px">⭐ Mis logros</h2>
+    <div class="mision-card" *ngFor="let l of logros"
+         [class]="l.obtenido ? 'mision-green' : 'mision-yellow'"
+         [style.opacity]="l.obtenido ? 1 : 0.5">
       <div class="mision-top">
-
-        <div class="mision-icon">
-          {{ l.icono }}
-        </div>
-
+        <div class="mision-icon">{{ l.icono }}</div>
         <div style="flex:1">
-
-          <div class="mision-nombre">
-            {{ l.nombre }}
-          </div>
-
-          <div class="mision-xp">
-            {{ l.descripcion }}
-          </div>
-
+          <div class="mision-nombre">{{ l.nombre }}</div>
+          <div class="mision-xp">{{ l.descripcion }}</div>
         </div>
-
-        <div
-          class="mision-badge"
-          [class]="
-            l.obtenido
-              ? 'badge-green'
-              : 'badge-yellow'
-          "
-        >
-
-          {{
-            l.obtenido
-              ? '✓ Obtenido'
-              : 'Bloqueado'
-          }}
-
+        <div class="mision-badge" [class]="l.obtenido ? 'badge-green' : 'badge-yellow'">
+          {{ l.obtenido ? '✓ Obtenido' : 'Bloqueado' }}
         </div>
-
       </div>
-
     </div>
-
-    <div
-      class="empty"
-      *ngIf="logros.length === 0"
-    >
-      Aún no hay logros disponibles
-    </div>
-
+    <div class="empty" *ngIf="logros.length === 0">Aún no hay logros disponibles</div>
   </div>
 
-
-  <!-- ======================================================= -->
-  <!--                  VISTA APRENDE / QUIZ                  -->
-  <!-- ======================================================= -->
-
+  <!-- VISTA APRENDE -->
   <div *ngIf="activeTab==='aprende'">
 
-
-    <!-- ====================== CARGANDO ===================== -->
-
-    <div
-      *ngIf="cargandoQuiz"
-      style="
-        text-align:center;
-        padding:40px
-      "
-    >
-
-      <div style="font-size:40px">
-        ⏳
-      </div>
-
-      <p
-        style="
-          font-family:'Fredoka',sans-serif;
-          color:var(--green-dark)
-        "
-      >
-        Cargando preguntas...
-      </p>
-
+    <!-- CARGANDO -->
+    <div *ngIf="cargandoQuiz" style="text-align:center;padding:40px">
+      <div style="font-size:40px">⏳</div>
+      <p style="font-family:'Fredoka',sans-serif;color:var(--green-dark)">Cargando preguntas...</p>
     </div>
 
-
-    <!-- ==================== CATEGORÍAS ==================== -->
-
-    <div
-      *ngIf="
-        !cargandoQuiz &&
-        vistaQuiz==='categorias'
-      "
-    >
-
-      <h2
-        class="misiones-title"
-        style="margin-bottom:8px"
-      >
-        🧠 ¡Aprende jugando!
-      </h2>
-
-      <p
-        style="
-          font-family:'Manjari',sans-serif;
-          font-size:14px;
-          color:#666;
-          margin-bottom:20px
-        "
-      >
-        Elige una categoría y responde
-        5 preguntas para ganar XP.
+    <!-- CATEGORÍAS -->
+    <div *ngIf="!cargandoQuiz && vistaQuiz==='categorias'">
+      <h2 class="misiones-title" style="margin-bottom:8px">🧠 ¡Aprende jugando!</h2>
+      <p style="font-family:'Manjari',sans-serif;font-size:14px;color:#666;margin-bottom:20px;text-align:center">
+        Elige una categoría, aprende los datos clave y responde 5 preguntas para ganar XP.
       </p>
-
-
-      <!-- TARJETAS DE CATEGORÍAS -->
-
-      <div
-        style="
-          display:grid;
-          grid-template-columns:
-            repeat(
-              auto-fill,
-              minmax(140px,1fr)
-            );
-          gap:12px
-        "
-      >
-
-        <button
-          *ngFor="let cat of categoriasDisponibles"
-          (click)="seleccionarCategoria(cat.key)"
-          class="cat-card"
-          type="button"
-        >
-
-          <span style="font-size:32px">
-            {{ cat.emoji }}
-          </span>
-
-          <span class="cat-label">
-            {{ cat.label }}
-          </span>
-
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:480px;margin:0 auto">
+        <button *ngFor="let cat of categoriasDisponibles.slice(0,6)"
+                (click)="seleccionarCategoria(cat.key)"
+                class="cat-card" type="button">
+          <span style="font-size:36px">{{ cat.emoji }}</span>
+          <span class="cat-label">{{ cat.label }}</span>
         </button>
-
       </div>
-
+      <div style="display:grid;grid-template-columns:repeat(1,1fr);gap:14px;max-width:154px;margin:14px auto 0">
+        <button (click)="seleccionarCategoria('general')" class="cat-card" type="button">
+          <span style="font-size:36px">🌍</span>
+          <span class="cat-label">General</span>
+        </button>
+      </div>
     </div>
 
+    <!-- INFO PREVIA -->
+    <div *ngIf="!cargandoQuiz && vistaQuiz==='info' && categoriaInfo">
 
-    <!-- ====================== PREGUNTAS =================== -->
-
-    <div
-      *ngIf="
-        !cargandoQuiz &&
-        vistaQuiz==='preguntas' &&
-        preguntasQuiz.length
-      "
-    >
-
-
-      <!-- CABECERA -->
-
-      <div
-        style="
-          display:flex;
-          justify-content:space-between;
-          align-items:center;
-          margin-bottom:16px
-        "
-      >
-
-        <span
-          style="
-            font-family:'Fredoka',sans-serif;
-            font-size:14px;
-            color:var(--green-dark)
-          "
-        >
-          Pregunta
-          {{ preguntaActual + 1 }}
-          de
-          {{ preguntasQuiz.length }}
-        </span>
-
-        <span
-          style="
-            font-family:'Fredoka',sans-serif;
-            font-size:13px;
-            color:#888
-          "
-        >
-          {{ categoriaSeleccionada | titlecase }}
-        </span>
-
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:16px;font-size:13px">
+        <span (click)="reiniciarQuiz()" style="color:var(--green);cursor:pointer">← Aprende</span>
+        <span style="color:#bbb">/</span>
+        <span style="color:var(--green-dark);font-weight:600">{{ categoriaInfo.label }}</span>
       </div>
 
-
-      <!-- BARRA DE PROGRESO -->
-
-      <div
-        class="xpbar"
-        style="margin-bottom:20px"
-      >
-
-        <div
-          class="xpfill"
-          [style.width]="
-            (
-              preguntaActual /
-              preguntasQuiz.length *
-              100
-            ) + '%'
-          "
-        >
+      <div class="mision-card mision-green" style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <div style="font-size:40px">{{ categoriaInfo.emoji }}</div>
+          <div>
+            <div style="font-family:'Fredoka',sans-serif;font-size:20px;color:var(--green-dark)">{{ categoriaInfo.label }}</div>
+            <div style="font-size:12px;color:#888;font-family:'Manjari',sans-serif">Lo que debes saber antes de responder el quiz</div>
+          </div>
         </div>
 
+        <div *ngFor="let fact of categoriaInfo.facts"
+             style="display:flex;align-items:flex-start;gap:10px;background:#f1f9eb;border-radius:10px;padding:10px 12px;margin-bottom:8px">
+          <span style="font-size:16px">💡</span>
+          <p style="margin:0;font-size:13px;font-family:'Manjari',sans-serif;color:#444">{{ fact }}</p>
+        </div>
+
+        <div style="margin-top:12px">
+          <button (click)="toggleEcobotInfo()" type="button"
+                  style="width:100%;background:#fff;color:var(--green-dark);border:2px solid var(--green);border-radius:20px;padding:10px;font-family:'Fredoka',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px">
+            🤖 {{ ecobotInfoAbierto ? 'Cerrar EcoBot' : '¿Tienes dudas? Pregúntale a EcoBot' }}
+          </button>
+
+          <div *ngIf="ecobotInfoAbierto"
+               style="background:#f1f9eb;border:1px solid #c0dd97;border-radius:10px;padding:12px">
+            <div style="max-height:200px;overflow-y:auto;margin-bottom:8px">
+              <div *ngFor="let m of chatInfoMensajes"
+                   [style.text-align]="m.tipo === 'user' ? 'right' : 'left'"
+                   style="margin-bottom:8px">
+                <span [style.background]="m.tipo === 'bot' ? '#fff' : 'var(--green)'"
+                      [style.color]="m.tipo === 'bot' ? '#333' : '#fff'"
+                      style="display:inline-block;padding:8px 12px;border-radius:10px;font-size:12px;max-width:85%;font-family:'Manjari',sans-serif">
+                  {{ m.texto }}
+                </span>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <input [(ngModel)]="chatInfoInput"
+                     placeholder="Pregúntame sobre {{ categoriaInfo.label }}..."
+                     (keydown.enter)="enviarMensajeInfo()"
+                     style="flex:1;padding:8px 12px;border-radius:20px;border:1px solid #c0dd97;font-size:13px;outline:none">
+              <button (click)="enviarMensajeInfo()" type="button"
+                      style="background:var(--green);color:#fff;border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:16px">
+                ➤
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
+      <button (click)="iniciarQuizDesdeInfo()" class="btn-orange" type="button" style="width:100%">
+        🧠 Empezar quiz de {{ categoriaInfo.label }}
+      </button>
+    </div>
 
-      <!-- TARJETA DE PREGUNTA -->
+    <!-- PREGUNTAS -->
+    <div *ngIf="!cargandoQuiz && vistaQuiz==='preguntas' && preguntasQuiz.length">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <span style="font-family:'Fredoka',sans-serif;font-size:14px;color:var(--green-dark)">
+          Pregunta {{ preguntaActual + 1 }} de {{ preguntasQuiz.length }}
+        </span>
+        <span style="font-family:'Fredoka',sans-serif;font-size:13px;color:#888">
+          {{ categoriaSeleccionada | titlecase }}
+        </span>
+      </div>
 
-      <div
-        class="mision-card mision-green"
-        style="margin-bottom:16px"
-      >
+      <div class="xpbar" style="margin-bottom:20px">
+        <div class="xpfill" [style.width]="(preguntaActual / preguntasQuiz.length * 100) + '%'"></div>
+      </div>
 
-        <p
-          style="
-            font-family:'Fredoka',sans-serif;
-            font-size:17px;
-            color:#1b5e20;
-            margin:0
-          "
-        >
+      <div class="mision-card mision-green" style="margin-bottom:16px">
+        <p style="font-family:'Fredoka',sans-serif;font-size:17px;color:#1b5e20;margin:0">
           {{ preguntasQuiz[preguntaActual].pregunta }}
         </p>
-
-        <span
-          style="
-            font-size:11px;
-            color:#888;
-            font-family:'Manjari',sans-serif
-          "
-        >
-          +{{ preguntasQuiz[preguntaActual].xp }}
-          XP si aciertas
+        <span style="font-size:11px;color:#888;font-family:'Manjari',sans-serif">
+          +{{ preguntasQuiz[preguntaActual].xp }} XP si aciertas
         </span>
-
       </div>
 
-
-      <!-- ====================== OPCIONES ================== -->
-
-      <div
-        style="
-          display:flex;
-          flex-direction:column;
-          gap:10px;
-          margin-bottom:16px
-        "
-      >
-
-        <button
-          *ngFor="
-            let op of
-            preguntasQuiz[preguntaActual].opciones
-          "
-          (click)="seleccionarRespuesta(op)"
-          [class]="getOpcionClass(op)"
-          [disabled]="mostrarFeedback"
-          type="button"
-          style="
-            text-align:left;
-            padding:12px 16px;
-            border-radius:12px;
-            border:2px solid;
-            font-family:'Fredoka',sans-serif;
-            font-size:15px;
-            cursor:pointer;
-            transition:all .2s
-          "
-        >
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+        <button *ngFor="let op of preguntasQuiz[preguntaActual].opciones"
+                (click)="seleccionarRespuesta(op)"
+                [class]="getOpcionClass(op)"
+                [disabled]="mostrarFeedback"
+                type="button"
+                style="text-align:left;padding:12px 16px;border-radius:12px;border:2px solid;font-family:'Fredoka',sans-serif;font-size:15px;cursor:pointer;transition:all .2s">
           {{ op }}
         </button>
-
       </div>
 
-
-      <!-- ====================== FEEDBACK ================== -->
-
-      <div
-        *ngIf="mostrarFeedback"
-        class="mision-card"
-        [class.mision-green]="esCorrecta()"
-        [class.mision-red]="!esCorrecta()"
-        style="margin-bottom:12px"
-      >
-
-        <p
-          style="
-            font-family:'Fredoka',sans-serif;
-            font-size:15px;
-            margin:0
-          "
-        >
-
-          {{
-            esCorrecta()
-              ? '✅ ¡Correcto!'
-              : '❌ Incorrecto'
-          }}
-
+      <div *ngIf="mostrarFeedback" class="mision-card"
+           [class.mision-green]="esCorrecta()" [class.mision-red]="!esCorrecta()"
+           style="margin-bottom:12px">
+        <p style="font-family:'Fredoka',sans-serif;font-size:15px;margin:0">
+          {{ esCorrecta() ? '✅ ¡Correcto!' : '❌ Incorrecto' }}
         </p>
-
-        <p
-          style="
-            font-family:'Manjari',sans-serif;
-            font-size:13px;
-            margin:6px 0 0
-          "
-        >
+        <p style="font-family:'Manjari',sans-serif;font-size:13px;margin:6px 0 0">
           {{ preguntasQuiz[preguntaActual].explicacion }}
         </p>
-
       </div>
 
-
-      <!-- ==================== CONFIRMAR =================== -->
-
-      <button
-        *ngIf="
-          !mostrarFeedback &&
-          respuestaSeleccionada
-        "
-        (click)="confirmarRespuesta()"
-        class="btn-orange"
-        type="button"
-        style="width:100%"
-      >
+      <button *ngIf="!mostrarFeedback && respuestaSeleccionada"
+              (click)="confirmarRespuesta()" class="btn-orange" type="button" style="width:100%">
         Confirmar respuesta
       </button>
 
-
-      <!-- ===================== SIGUIENTE ================== -->
-
-      <button
-        *ngIf="mostrarFeedback"
-        (click)="siguientePregunta()"
-        class="btn-orange"
-        type="button"
-        style="width:100%"
-      >
-
-        {{
-          preguntaActual < preguntasQuiz.length - 1
-            ? 'Siguiente pregunta →'
-            : 'Ver resultado 🎉'
-        }}
-
+      <button *ngIf="mostrarFeedback" (click)="siguientePregunta()"
+              class="btn-orange" type="button" style="width:100%">
+        {{ preguntaActual < preguntasQuiz.length - 1 ? 'Siguiente pregunta →' : 'Ver resultado 🎉' }}
       </button>
-
     </div>
 
-
-    <!-- ======================= RESULTADO ================= -->
-
-    <div
-      *ngIf="
-        !cargandoQuiz &&
-        vistaQuiz==='resultado' &&
-        resultadoQuiz
-      "
-      style="
-        text-align:center;
-        padding:20px 0
-      "
-    >
-
-      <!-- TROFEO -->
-
+    <!-- RESULTADO -->
+    <div *ngIf="!cargandoQuiz && vistaQuiz==='resultado' && resultadoQuiz"
+         style="text-align:center;padding:20px 0">
       <div style="font-size:64px">
-
-        {{
-          resultadoQuiz.correctas === resultadoQuiz.total
-            ? '🏆'
-            : resultadoQuiz.correctas >= 3
-              ? '⭐'
-              : '💪'
-        }}
-
+        {{ resultadoQuiz.correctas === resultadoQuiz.total ? '🏆' : resultadoQuiz.correctas >= 3 ? '⭐' : '💪' }}
       </div>
-
-
-      <!-- PUNTUACIÓN -->
-
-      <h2
-        style="
-          font-family:'Fredoka',sans-serif;
-          font-size:26px;
-          color:var(--green-dark);
-          margin:8px 0
-        "
-      >
-
-        {{ resultadoQuiz.correctas }}
-        /
-        {{ resultadoQuiz.total }}
-        correctas
-
+      <h2 style="font-family:'Fredoka',sans-serif;font-size:26px;color:var(--green-dark);margin:8px 0">
+        {{ resultadoQuiz.correctas }} / {{ resultadoQuiz.total }} correctas
       </h2>
-
-
-      <!-- XP GANADOS -->
-
-      <div
-        class="xp-pill"
-        style="
-          display:inline-block;
-          margin:8px 0 20px
-        "
-      >
-        +{{ resultadoQuiz.puntosGanados }}
-        XP ganados
+      <div class="xp-pill" style="display:inline-block;margin:8px 0 20px">
+        +{{ resultadoQuiz.puntosGanados }} XP ganados
       </div>
-
-
-      <!-- MENSAJE FINAL -->
-
-      <p
-        style="
-          font-family:'Manjari',sans-serif;
-          font-size:14px;
-          color:#666;
-          margin-bottom:24px
-        "
-      >
-
-        {{
-          resultadoQuiz.correctas === resultadoQuiz.total
-            ? '¡Perfecto! Eres un experto ambiental 🌍'
-            : resultadoQuiz.correctas >= 3
-              ? '¡Muy bien! Sigue aprendiendo 🌱'
-              : 'No te rindas, ¡practica más! ♻️'
-        }}
-
+      <p style="font-family:'Manjari',sans-serif;font-size:14px;color:#666;margin-bottom:24px">
+        {{ resultadoQuiz.correctas === resultadoQuiz.total ? '¡Perfecto! Eres un experto ambiental 🌍' :
+        resultadoQuiz.correctas >= 3 ? '¡Muy bien! Sigue aprendiendo 🌱' :
+          'No te rindas, ¡practica más! ♻️' }}
       </p>
-
-
-      <!-- JUGAR OTRA VEZ -->
-
-      <button
-        (click)="reiniciarQuiz()"
-        class="btn-orange"
-        type="button"
-        style="width:100%"
-      >
+      <button (click)="reiniciarQuiz()" class="btn-orange" type="button" style="width:100%">
         Jugar otra vez
       </button>
-
     </div>
 
   </div>
 
 </div>
 
-
-<!-- ========================================================= -->
-<!--                       BOTTOM NAV                          -->
-<!-- ========================================================= -->
-
+<!-- BOTTOM NAV -->
 <div class="botnav">
-
-
-  <!-- INICIO -->
-
-  <button
-    class="bnav-btn"
-    [class.on]="activeTab==='inicio'"
-    (click)="setTab('inicio')"
-    type="button"
-  >
-
-    <span class="bnav-icon">
-      🏠
-    </span>
-
-    <span class="bnav-lbl">
-      Inicio
-    </span>
-
+  <button class="bnav-btn" [class.on]="activeTab==='inicio'" (click)="setTab('inicio')">
+    <span class="bnav-icon">🏠</span><span class="bnav-lbl">Inicio</span>
   </button>
-
-
-  <!-- LOGROS -->
-
-  <button
-    class="bnav-btn"
-    [class.on]="activeTab==='logros'"
-    (click)="setTab('logros')"
-    type="button"
-  >
-
-    <span class="bnav-icon">
-      ⭐
-    </span>
-
-    <span class="bnav-lbl">
-      Logros
-    </span>
-
+  <button class="bnav-btn" [class.on]="activeTab==='aprende'" (click)="setTab('aprende')">
+    <span class="bnav-icon">🧠</span><span class="bnav-lbl">Aprende</span>
   </button>
-
-
-  <!-- APRENDE -->
-
-  <button
-    class="bnav-btn"
-    [class.on]="activeTab==='aprende'"
-    (click)="setTab('aprende')"
-    type="button"
-  >
-
-    <span class="bnav-icon">
-      🧠
-    </span>
-
-    <span class="bnav-lbl">
-      Aprende
-    </span>
-
+  <button class="bnav-btn" [class.on]="activeTab==='logros'" (click)="setTab('logros')">
+    <span class="bnav-icon">⭐</span><span class="bnav-lbl">Logros</span>
   </button>
-
-
-  <!-- CLASIFICADOR -->
-
-  <button
-    class="bnav-btn"
-    routerLink="/student/classifier"
-    type="button"
-  >
-
-    <span class="bnav-icon">
-      🎥
-    </span>
-
-    <span class="bnav-lbl">
-      Clasificador de residuos
-    </span>
-
+  <button class="bnav-btn" (click)="irAClasificador()">
+    <span class="bnav-icon">🎥</span><span class="bnav-lbl">Clasificar</span>
   </button>
-
 </div>
 
-
-<!-- ========================================================= -->
-<!--                       ECOBOT FAB                          -->
-<!-- ========================================================= -->
-
-<button
-  class="ecobot-fab"
-  (click)="abrirEcobot()"
-  type="button"
->
-
-  <img
-    src="logo.png"
-    alt="EcoBot"
-    style="
-      width:32px;
-      height:32px;
-      border-radius:50%
-    "
-  >
-
+<!-- ECOBOT FAB -->
+<button class="ecobot-fab" (click)="abrirEcobot()" type="button">
+  <img src="logo.png" alt="EcoBot" style="width:32px;height:32px;border-radius:50%">
 </button>
 
+<!-- ECOBOT OVERLAY -->
+<div class="ecobot-overlay" *ngIf="ecobotAbierto" (click)="cerrarEcobot()"></div>
 
-<!-- ========================================================= -->
-<!--                    ECOBOT OVERLAY                         -->
-<!-- ========================================================= -->
-
-<div
-  class="ecobot-overlay"
-  *ngIf="ecobotAbierto"
-  (click)="cerrarEcobot()"
->
-</div>
-
-
-<!-- ========================================================= -->
-<!--                     ECOBOT PANEL                          -->
-<!-- ========================================================= -->
-
-<div
-  class="ecobot-panel"
-  *ngIf="ecobotAbierto"
->
-
-
-  <!-- HEADER -->
-
+<!-- ECOBOT PANEL -->
+<div class="ecobot-panel" *ngIf="ecobotAbierto">
   <div class="ecobot-header">
-
-    <div
-      style="
-        display:flex;
-        align-items:center;
-        gap:10px
-      "
-    >
-
-      <div class="ecobot-av">
-        🌱
-      </div>
-
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="ecobot-av">🌱</div>
       <div>
-
-        <div class="ecobot-nombre">
-          EcoBot
-        </div>
-
-        <div class="ecobot-status">
-          ● En línea
-        </div>
-
+        <div class="ecobot-nombre">EcoBot</div>
+        <div class="ecobot-status">● En línea</div>
       </div>
-
     </div>
-
-
-    <button
-      class="btn-cerrar"
-      (click)="cerrarEcobot()"
-      type="button"
-    >
-      ✕
-    </button>
-
+    <button class="btn-cerrar" (click)="cerrarEcobot()" type="button">✕</button>
   </div>
-
-
-  <!-- CHAT -->
-
   <div class="chat-area">
-
-    <div
-      *ngFor="let m of chatMensajes"
-      [class]="
-        m.tipo === 'bot'
-          ? 'bubble-bot'
-          : 'bubble-user'
-      "
-    >
+    <div *ngFor="let m of chatMensajes" [class]="m.tipo === 'bot' ? 'bubble-bot' : 'bubble-user'">
       {{ m.texto }}
     </div>
-
   </div>
-
-
-  <!-- CHIPS -->
-
   <div class="chat-chips">
-
-    <button
-      class="chip"
-      (click)="
-        chatInput='¿Cómo reciclo plástico?';
-        enviarMensaje()
-      "
-      type="button"
-    >
-      ♻️ Plástico
-    </button>
-
-    <button
-      class="chip"
-      (click)="
-        chatInput='¿Qué es el compostaje?';
-        enviarMensaje()
-      "
-      type="button"
-    >
-      🌱 Compostaje
-    </button>
-
-    <button
-      class="chip"
-      (click)="
-        chatInput='¿Qué hago con las pilas?';
-        enviarMensaje()
-      "
-      type="button"
-    >
-      🔋 Pilas
-    </button>
-
+    <button class="chip" (click)="chatInput='¿Cómo reciclo plástico?';enviarMensaje()" type="button">♻️ Plástico</button>
+    <button class="chip" (click)="chatInput='¿Qué es el compostaje?';enviarMensaje()" type="button">🌱 Compostaje</button>
+    <button class="chip" (click)="chatInput='¿Qué hago con las pilas?';enviarMensaje()" type="button">🔋 Pilas</button>
   </div>
-
-
-  <!-- INPUT -->
-
   <div class="chat-input-row">
-
-    <input
-      [(ngModel)]="chatInput"
-      placeholder="Escribe tu pregunta..."
-      (keydown.enter)="enviarMensaje()"
-      class="chat-input"
-    >
-
-    <button
-      class="btn-send"
-      (click)="enviarMensaje()"
-      type="button"
-    >
-      ➤
-    </button>
-
+    <input [(ngModel)]="chatInput" placeholder="Escribe tu pregunta..."
+           (keydown.enter)="enviarMensaje()" class="chat-input">
+    <button class="btn-send" (click)="enviarMensaje()" type="button">➤</button>
   </div>
-
 </div>

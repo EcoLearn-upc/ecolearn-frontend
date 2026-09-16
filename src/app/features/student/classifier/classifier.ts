@@ -1,12 +1,14 @@
 import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ResiduoService } from '../../../core/services/residuo.service';
 import { UsuarioService, PerfilUsuario } from '../../../core/services/usuario.service';
+import { ChatbotService } from '../../../core/services/chatbot.service';
 
 @Component({
   selector: 'app-classifier',
-  imports: [RouterModule, CommonModule],
+  imports: [RouterModule, CommonModule, FormsModule],
   templateUrl: './classifier.html',
   styleUrl: './classifier.css'
 })
@@ -16,23 +18,26 @@ export class Classifier implements OnInit {
 
   perfil: PerfilUsuario | null = null;
   alumno: any = null;
-  estado: 'idle' | 'loading' | 'pregunta' | 'result' | 'error' = 'idle';
+  estado: 'idle' | 'loading' | 'result' | 'error' = 'idle';
   resultado: any = null;
   imagenPreview: string | null = null;
   errorMsg = '';
   recientes: any[] = [];
+  returnTab = 'inicio';
 
-  // datos del nuevo flujo con pregunta
-  sesionId: string | null = null;
-  opcionesPregunta: string[] = [];
-  respuestaSeleccionada: string | null = null;
-  adivinoCorrectamente: boolean | null = null;
+  // ECOBOT
+  ecobotAbierto = false;
+  chatMensajes: { tipo: string; texto: string }[] = [
+    { tipo: 'bot', texto: '¡Hola! Soy EcoBot 🌿 Tu asistente ambiental. Pregúntame sobre reciclaje y cuidado del planeta.' }
+  ];
+  chatInput = '';
+  enviandoChat = false;
 
   tipos = [
-    { emoji: '♻️', nombre: 'Plástico', subtipo: 'Reciclable', color: 'green' },
-    { emoji: '🍂', nombre: 'Orgánico', subtipo: 'Compostable', color: 'yellow' },
-    { emoji: '📰', nombre: 'Papel', subtipo: 'Reciclable', color: 'gray' },
-    { emoji: '🥫', nombre: 'Metal', subtipo: 'Reciclable', color: 'red' },
+    { emoji: '♻️', nombre: 'Plástico',  subtipo: 'Reciclable',  color: 'green'  },
+    { emoji: '🍂', nombre: 'Orgánico',  subtipo: 'Compostable', color: 'yellow' },
+    { emoji: '📰', nombre: 'Papel',     subtipo: 'Reciclable',  color: 'gray'   },
+    { emoji: '🥫', nombre: 'Metal',     subtipo: 'Reciclable',  color: 'red'    },
   ];
 
   desempeno = { clasificados: 0, racha: 0, correctas: 0, total: 0 };
@@ -40,11 +45,17 @@ export class Classifier implements OnInit {
   constructor(
     private residuoService: ResiduoService,
     private usuarioService: UsuarioService,
+    private chatbotService: ChatbotService,
     private router: Router,
+    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
+    // Leer el tab desde el que vino el usuario
+    this.route.queryParamMap.subscribe(params => {
+      this.returnTab = params.get('returnTab') || 'inicio';
+    });
     this.cargarPerfil();
     this.cargarHistorial();
   }
@@ -55,8 +66,8 @@ export class Classifier implements OnInit {
         this.perfil = p;
         this.alumno = { nombre: p.nombre, avatar: '🌱' };
         this.desempeno.clasificados = p.totalClasificaciones;
-        this.desempeno.correctas = p.clasificacionesCorrectas;
-        this.desempeno.total = p.totalClasificaciones;
+        this.desempeno.correctas   = p.clasificacionesCorrectas;
+        this.desempeno.total       = p.totalClasificaciones;
         this.cdr.detectChanges();
       },
       error: () => this.perfil = null
@@ -67,12 +78,12 @@ export class Classifier implements OnInit {
     this.residuoService.historial().subscribe({
       next: (historial) => {
         this.recientes = historial.slice(0, 5).map(r => ({
-          emoji: this.getEmojiPorClase(r.categoriaDetectada),
+          emoji:  this.getEmojiPorClase(r.categoriaDetectada),
           nombre: this.traducirClase(r.categoriaDetectada),
-          fecha: this.formatearFecha(r.fecha),
-          tipo: this.getTipoTexto(r.categoriaDetectada),
-          xp: r.puntosGanados,
-          color: this.getColorPorClase(r.categoriaDetectada)
+          fecha:  this.formatearFecha(r.fecha),
+          tipo:   this.getTipoTexto(r.categoriaDetectada),
+          xp:     r.puntosGanados,
+          color:  this.getColorPorClase(r.categoriaDetectada)
         }));
         this.cdr.detectChanges();
       },
@@ -80,13 +91,48 @@ export class Classifier implements OnInit {
     });
   }
 
+  // --- NAVEGACIÓN ---
+  volverAlHome(tab?: string) {
+    this.router.navigate(['/student/home'], {
+      queryParams: { returnTab: tab || this.returnTab }
+    });
+  }
+
+  // --- ECOBOT ---
+  abrirEcobot()  { this.ecobotAbierto = true;  }
+  cerrarEcobot() { this.ecobotAbierto = false; }
+
+  enviarMensaje() {
+    if (!this.chatInput.trim() || this.enviandoChat) return;
+    const pregunta = this.chatInput;
+    this.chatMensajes.push({ tipo: 'user', texto: pregunta });
+    this.chatInput = '';
+    this.enviandoChat = true;
+    this.cdr.detectChanges();
+
+    this.chatbotService.enviarMensaje(pregunta).subscribe({
+      next: (historial) => {
+        const ultimo = historial.mensajes[historial.mensajes.length - 1];
+        this.chatMensajes.push({ tipo: 'bot', texto: ultimo.contenido });
+        this.enviandoChat = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.chatMensajes.push({ tipo: 'bot', texto: 'EcoBot no está disponible ahora, intenta más tarde 🌱' });
+        this.enviandoChat = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // --- CLASIFICADOR ---
   formatearFecha(fecha: string): string {
-    const d = new Date(fecha);
-    const hoy = new Date();
+    const d    = new Date(fecha);
+    const hoy  = new Date();
     const ayer = new Date();
     ayer.setDate(hoy.getDate() - 1);
     const hora = d.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
-    if (d.toDateString() === hoy.toDateString()) return `Hoy ${hora}`;
+    if (d.toDateString() === hoy.toDateString())  return `Hoy ${hora}`;
     if (d.toDateString() === ayer.toDateString()) return `Ayer ${hora}`;
     return d.toLocaleDateString('es-PE', { weekday: 'short', day: 'numeric' }) + ` ${hora}`;
   }
@@ -119,40 +165,18 @@ export class Classifier implements OnInit {
     const reader = new FileReader();
     reader.onload = (e: any) => { this.imagenPreview = e.target.result; };
     reader.readAsDataURL(file);
-    this.estado = 'loading';
+    this.estado   = 'loading';
     this.errorMsg = '';
 
-    this.residuoService.clasificarConPregunta(file).subscribe({
+    this.residuoService.clasificar(file).subscribe({
       next: (res) => {
-        this.sesionId = res.sesionId;
-        this.opcionesPregunta = res.opciones;
-        this.estado = 'pregunta';
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        this.estado = 'error';
-        this.errorMsg = err.error?.error || 'No se pudo clasificar la imagen. Intenta con otra foto.';
-        this.cdr.detectChanges();
-      }
-    });
-  }
-
-  responderPregunta(opcion: string) {
-    if (!this.sesionId) return;
-    this.respuestaSeleccionada = opcion;
-    this.cdr.detectChanges();
-
-    this.residuoService.responderPrediccion(this.sesionId, opcion).subscribe({
-      next: (res) => {
-        this.adivinoCorrectamente = res.categoriaDetectada === opcion;
         this.resultado = {
-          clase: res.categoriaDetectada,
-          confianza: res.confianza,
-          puntosGanados: res.puntosGanados,
-          esCorrecta: res.esCorrecta,
+          clase:          res.categoriaDetectada,
+          confianza:      res.confianza,
+          puntosGanados:  res.puntosGanados,
+          esCorrecta:     res.esCorrecta,
           claseTraducida: this.traducirClase(res.categoriaDetectada),
-          recomendacion: res.recomendacion,
-          adivinoCorrectamente: res.categoriaDetectada === opcion
+          recomendacion:  res.recomendacion
         };
         this.estado = 'result';
         this.cargarPerfil();
@@ -160,9 +184,8 @@ export class Classifier implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        this.estado = 'error';
-        this.errorMsg = err.error?.error || 'Error al procesar tu respuesta.';
-        this.cdr.detectChanges();
+        this.estado   = 'error';
+        this.errorMsg = err.error?.error || 'No se pudo clasificar la imagen. Intenta con otra foto.';
       }
     });
   }
@@ -177,24 +200,11 @@ export class Classifier implements OnInit {
     return map[clase?.toLowerCase()] || clase;
   }
 
-  getEmojiPorClase(clase: string): string {
-    const map: any = {
-      'glass': '🍶', 'plastic': '🧴', 'paper': '📰', 'cardboard': '📦',
-      'metal': '🥫', 'trash': '🗑️', 'organic': '🍌', 'biological': '🍌',
-      'clothes': '👕', 'shoes': '👟', 'battery': '🔋'
-    };
-    return map[clase?.toLowerCase()] || '♻️';
-  }
-
   resetear() {
-    this.estado = 'idle';
-    this.resultado = null;
+    this.estado       = 'idle';
+    this.resultado    = null;
     this.imagenPreview = null;
-    this.errorMsg = '';
-    this.sesionId = null;
-    this.opcionesPregunta = [];
-    this.respuestaSeleccionada = null;
-    this.adivinoCorrectamente = null;
+    this.errorMsg     = '';
   }
 
   getConfianzaPct(): number {
@@ -202,10 +212,10 @@ export class Classifier implements OnInit {
   }
 
   getTipoBadgeColor(tipo: string): string {
-    if (tipo?.toLowerCase().includes('plástico')) return 'badge-green';
-    if (tipo?.toLowerCase().includes('orgánico')) return 'badge-yellow';
-    if (tipo?.toLowerCase().includes('papel')) return 'badge-gray';
-    if (tipo?.toLowerCase().includes('metal')) return 'badge-red';
+    const t = tipo?.toLowerCase();
+    if (t?.includes('plastic') || t?.includes('glass') || t?.includes('paper') || t?.includes('metal')) return 'badge-green';
+    if (t?.includes('organic') || t?.includes('biological')) return 'badge-yellow';
+    if (t?.includes('trash')) return 'badge-red';
     return 'badge-green';
   }
 
@@ -215,9 +225,18 @@ export class Classifier implements OnInit {
   }
 
   getRecienteColor(color: string): string {
-    if (color === 'green') return 'badge-green';
+    if (color === 'green')  return 'badge-green';
     if (color === 'yellow') return 'badge-yellow';
     return 'badge-gray';
+  }
+
+  getEmojiPorClase(clase: string): string {
+    const map: any = {
+      'glass': '🍶', 'plastic': '🧴', 'paper': '📰', 'cardboard': '📦',
+      'metal': '🥫', 'trash': '🗑️', 'organic': '🍌', 'biological': '🍌',
+      'clothes': '👕', 'shoes': '👟', 'battery': '🔋'
+    };
+    return map[clase?.toLowerCase()] || '♻️';
   }
 
   getTipoTexto(clase: string): string {

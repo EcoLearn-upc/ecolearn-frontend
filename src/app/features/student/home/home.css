@@ -443,3 +443,58 @@
   font-size: 13px;
   display: inline-block;
 }
+
+/* CATEGORÍAS QUIZ */
+.cat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 12px;
+  background: #fff;
+  border: 2px solid var(--green-soft);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all .2s;
+  font-family: 'Fredoka', sans-serif;
+  min-height: 110px;
+  justify-content: center;
+}
+.cat-card:hover {
+  border-color: var(--green);
+  background: var(--green-soft);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76,175,80,.2);
+}
+.cat-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--green-dark);
+}
+/* OPCIONES QUIZ */
+.opcion-normal {
+  background: #fff;
+  border-color: #e0e0e0;
+  color: var(--green-dark);
+}
+.opcion-normal:hover {
+  border-color: var(--green);
+  background: var(--green-soft);
+}
+.opcion-seleccionada {
+  background: var(--green-soft);
+  border-color: var(--green);
+  color: var(--green-dark);
+  font-weight: 600;
+}
+.opcion-correcta {
+  background: #EAF3DE;
+  border-color: #97C459;
+  color: #27500A;
+  font-weight: 600;
+}
+.opcion-incorrecta {
+  background: #FBE9E7;
+  border-color: #F0997B;
+  color: #712B13;
+}
